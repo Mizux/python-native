@@ -14,7 +14,7 @@ class InstallPlatlib(install):
         self.install_lib=self.install_platlib
 
 setup(
-  name='@PROJECT_NAME@',
+  name='@PYTHON_PROJECT@',
   version='@PROJECT_VERSION@',
   author='Mizux',
   author_email='\"Mizux Seiha\" <mizux.dev@gmail.com>',
@@ -23,8 +23,8 @@ setup(
   cmdclass={'install': InstallPlatlib},
   packages=find_packages(),
   package_data={
-  '@PROJECT_NAME@':[$<$<NOT:$<PLATFORM_ID:Windows>>:'.libs/*'>],
-  '@PROJECT_NAME@.Foo':['$<TARGET_FILE_NAME:pyFoo>'],
+  '@PYTHON_PROJECT@':[$<$<NOT:$<PLATFORM_ID:Windows>>:'.libs/*'>],
+  '@PYTHON_PROJECT@.Foo':['$<TARGET_FILE_NAME:pyFoo>'],
   },
   include_package_data=True,
   classifiers=[

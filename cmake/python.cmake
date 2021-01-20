@@ -54,7 +54,7 @@ endfunction()
 search_python_module(setuptools)
 search_python_module(wheel)
 
-# setup.py.in contains cmake variable e.g. @PROJECT_NAME@ and
+# setup.py.in contains cmake variable e.g. @PYTHON_PROJECT@ and
 # generator expression e.g. $<TARGET_FILE_NAME:pyFoo>
 configure_file(
   ${PROJECT_SOURCE_DIR}/python/setup.py.in
@@ -71,34 +71,38 @@ add_custom_command(
   WORKING_DIRECTORY python)
 
 add_custom_command(
-  OUTPUT python/${PROJECT_NAME}/__init__.py
+  OUTPUT python/${PYTHON_PROJECT}/__init__.py
   DEPENDS ${PROJECT_SOURCE_DIR}/python/__init__.py.in
-  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/python/__init__.py.in ${PROJECT_NAME}/__init__.py
+  COMMAND ${CMAKE_COMMAND} -E copy
+    ${PROJECT_SOURCE_DIR}/python/__init__.py.in
+    ${PYTHON_PROJECT}/__init__.py
   WORKING_DIRECTORY python)
 
 add_custom_command(
-  OUTPUT python/${PROJECT_NAME}/Foo/__init__.py
+  OUTPUT python/${PYTHON_PROJECT}/Foo/__init__.py
   DEPENDS ${PROJECT_SOURCE_DIR}/python/__init__.py.in
-  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/python/__init__.py.in ${PROJECT_NAME}/Foo/__init__.py
+  COMMAND ${CMAKE_COMMAND} -E copy
+    ${PROJECT_SOURCE_DIR}/python/__init__.py.in
+    ${PYTHON_PROJECT}/Foo/__init__.py
   WORKING_DIRECTORY python)
 
 add_custom_target(python_package ALL
   DEPENDS
     python/setup.py
-    python/${PROJECT_NAME}/__init__.py
-    python/${PROJECT_NAME}/Foo/__init__.py
+    python/${PYTHON_PROJECT}/__init__.py
+    python/${PYTHON_PROJECT}/Foo/__init__.py
   COMMAND ${CMAKE_COMMAND} -E remove_directory dist
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}/.libs
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PROJECT_NAME}/Foo
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_PROJECT}/.libs
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PYTHON_PROJECT}/Foo
   # Don't need to copy static lib on Windows
   COMMAND ${CMAKE_COMMAND} -E $<IF:$<BOOL:${UNIX}>,copy,true>
-    $<TARGET_FILE:Foo> ${PROJECT_NAME}/.libs
+    $<TARGET_FILE:Foo> ${PYTHON_PROJECT}/.libs
   COMMAND ${Python_EXECUTABLE} setup.py bdist_wheel
   BYPRODUCTS
-    python/${PROJECT_NAME}
+    python/${PYTHON_PROJECT}
     python/build
     python/dist
-    python/${PROJECT_NAME}.egg-info
+    python/${PYTHON_PROJECT}.egg-info
   WORKING_DIRECTORY python)
 
 ###################
@@ -109,7 +113,7 @@ if(BUILD_TESTING)
   search_python_module(virtualenv)
   # Testing using a vitual environment
   set(VENV_EXECUTABLE ${Python_EXECUTABLE} -m virtualenv)
-  set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/venv)
+  set(VENV_DIR ${PROJECT_BINARY_DIR}/python/venv)
   if(WIN32)
     set(VENV_Python_EXECUTABLE "${VENV_DIR}\\Scripts\\python.exe")
   else()
@@ -117,19 +121,25 @@ if(BUILD_TESTING)
   endif()
   # make a virtualenv to install our python package in it
   add_custom_command(TARGET python_package POST_BUILD
-    COMMAND ${VENV_EXECUTABLE} -p ${Python_EXECUTABLE} ${VENV_DIR}
-    # Must not call it in a folder containing the setup.py otherwise pip call it
-    # (i.e. "python setup.py bdist") while we want to consume the wheel package
-    COMMAND ${VENV_Python_EXECUTABLE} -m pip install --find-links=${CMAKE_CURRENT_BINARY_DIR}/python/dist ${PROJECT_NAME}
     BYPRODUCTS ${VENV_DIR}
+    COMMAND ${VENV_EXECUTABLE} -p ${Python_EXECUTABLE} ${VENV_DIR}
+    # Must NOT call it in a folder containing the setup.py otherwise pip call it
+    # (i.e. "python setup.py bdist") while we want to consume the wheel package
+    COMMAND ${VENV_Python_EXECUTABLE} -m pip uninstall -y ${PYTHON_PROJECT}
+    COMMAND ${VENV_Python_EXECUTABLE} -m pip install --find-links=${PROJECT_BINARY_DIR}/python/dist ${PYTHON_PROJECT}
+    COMMENT "Create venv and install ${PYTHON_PROJECT}"
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-  set(TEST_PATH ${PROJECT_BINARY_DIR}/python/test)
-  file(COPY ${PROJECT_SOURCE_DIR}/python/test.py
-    DESTINATION ${TEST_PATH})
+  add_custom_command(TARGET python_package POST_BUILD
+    BYPRODUCTS python/test/test.py
+    DEPENDS ${PROJECT_SOURCE_DIR}/python/test.py
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/python/test.py test/test.py
+    COMMENT "Copying test.py"
+    WORKING_DIRECTORY python)
+
   # run the tests within the virtualenv
   add_test(
     NAME python_test
-    COMMAND ${VENV_Python_EXECUTABLE} test.py
-    WORKING_DIR ${TEST_PATH})
+    COMMAND ${VENV_Python_EXECUTABLE} python/test/test.py
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()

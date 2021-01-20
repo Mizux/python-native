@@ -17,14 +17,14 @@ set_property(TARGET pyFoo PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES ON)
 if(APPLE)
   set_target_properties(pyFoo PROPERTIES
     SUFFIX ".so"
-    INSTALL_RPATH "@loader_path;@loader_path/../../${PROJECT_NAME}/.libs"
+    INSTALL_RPATH "@loader_path;@loader_path/../../${PYTHON_PROJECT}/.libs"
     )
   set_property(TARGET pyFoo APPEND PROPERTY
     LINK_FLAGS "-flat_namespace -undefined suppress"
     )
 elseif(UNIX)
   set_target_properties(pyFoo PROPERTIES
-    INSTALL_RPATH "$ORIGIN:$ORIGIN/../../${PROJECT_NAME}/.libs"
+    INSTALL_RPATH "$ORIGIN:$ORIGIN/../../${PYTHON_PROJECT}/.libs"
     )
 endif()
 target_link_libraries(pyFoo PRIVATE ${PROJECT_NAMESPACE}::Foo)

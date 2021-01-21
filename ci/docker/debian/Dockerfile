@@ -60,7 +60,7 @@ WORKDIR /home/sample
 COPY ci/samples .
 
 FROM install_devel AS install_build
-RUN python sample.py
+RUN python3 sample.py
 
 FROM install_build AS install_test
-RUN python sample.py
+RUN python3 sample.py

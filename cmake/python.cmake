@@ -18,7 +18,7 @@ if(Python_VERSION VERSION_GREATER_EQUAL 3)
   list(APPEND CMAKE_SWIG_FLAGS "-py3;-DPY3")
 endif()
 
-# Needed by java/CMakeLists.txt
+# Needed by python/CMakeLists.txt
 set(PYTHON_PROJECT pythonnative)
 
 # Swig wrap all libraries

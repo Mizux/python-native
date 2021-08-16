@@ -10,11 +10,11 @@ RUN dnf -y update \
 && dnf clean all \
 && rm -rf /var/cache/dnf
 
-# Install CMake 3.19.2
-RUN wget "https://cmake.org/files/v3.19/cmake-3.19.2-Linux-x86_64.sh" \
-&& chmod a+x cmake-3.19.2-Linux-x86_64.sh \
-&& ./cmake-3.19.2-Linux-x86_64.sh --prefix=/usr/local/ --skip-license \
-&& rm cmake-3.19.2-Linux-x86_64.sh
+# Install CMake 3.21.1
+RUN wget "https://cmake.org/files/v3.21/cmake-3.21.1-linux-x86_64.sh" \
+&& chmod a+x cmake-3.21.1-linux-x86_64.sh \
+&& ./cmake-3.21.1-linux-x86_64.sh --prefix=/usr/local/ --skip-license \
+&& rm cmake-3.21.1-linux-x86_64.sh
 
 # Install SWIG 4.0.2
 RUN dnf -y update \

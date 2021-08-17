@@ -1,4 +1,5 @@
-name: Docker
+# ref: https://github.com/docker-library/official-images
+name: Docker Linux x86-64
 
 on:
   push:
@@ -15,7 +16,7 @@ jobs:
         distro: [alpine, archlinux, centos, debian, fedora, opensuse, ubuntu]
       fail-fast: false
     env:
-      DISTRO: ${{ matrix.distro }}
+      DISTRO: amd64_${{ matrix.distro }}
     steps:
     - uses: actions/checkout@v2
     - name: Build env image

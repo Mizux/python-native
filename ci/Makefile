@@ -34,15 +34,15 @@ help:
 	@echo -e "\t\t${BOLD}install_test${RESET}"
 	@echo -e "\te.g. 'make build'"
 	@echo
-	@echo -e "\tWith ${BOLD}<distro>${RESET}:"
-	@echo -e "\t\t${BOLD}alpine${RESET} (edge)"
-	@echo -e "\t\t${BOLD}archlinux${RESET} (latest)"
-	@echo -e "\t\t${BOLD}centos${RESET} (latest)"
-	@echo -e "\t\t${BOLD}debian${RESET} (latest)"
-	@echo -e "\t\t${BOLD}fedora${RESET} (latest)"
-	@echo -e "\t\t${BOLD}opensuse${RESET} (tumbleweed)"
-	@echo -e "\t\t${BOLD}ubuntu${RESET} (rolling)"
-	@echo -e "\te.g. 'make ubuntu_test'"
+	@echo -e "\tWith amd64 (x86_64) ${BOLD}<distro>${RESET}:"
+	@echo -e "\t\t${BOLD}amd64_alpine${RESET} (edge)"
+	@echo -e "\t\t${BOLD}amd64_archlinux${RESET} (latest)"
+	@echo -e "\t\t${BOLD}amd64_centos${RESET} (latest)"
+	@echo -e "\t\t${BOLD}amd64_debian${RESET} (latest)"
+	@echo -e "\t\t${BOLD}amd64_fedora${RESET} (latest)"
+	@echo -e "\t\t${BOLD}amd64_opensuse${RESET} (tumbleweed)"
+	@echo -e "\t\t${BOLD}amd64_ubuntu${RESET} (rolling)"
+	@echo -e "\te.g. 'make amd64_ubuntu_test'"
 	@echo
 	@echo -e "\t${BOLD}clean${RESET}: Remove cache and ALL docker images."
 	@echo -e "\t${BOLD}clean_<distro>${RESET}: Remove cache and docker images for the specified distro."
@@ -78,62 +78,66 @@ endif
 DOCKER_RUN_CMD := docker run --rm --init --net=host
 
 # Currently supported distro
-DISTROS = alpine archlinux centos debian fedora opensuse ubuntu
+DISTROS = alpine centos debian fedora ubuntu
+STAGES = env devel build test install_env install_devel install_build install_test
 
 # $* stem
 # $< first prerequist
 # $@ target name
 
-############
-## STAGES ##
-############
-STAGES = env devel build test install_env install_devel install_build install_test
+export/%:
+	-mkdir -pv $@
+
+##################
+## AMD64 STAGES ##
+##################
+AMD_DISTROS = $(addprefix amd64_, $(DISTROS) archlinux opensuse)
 define make-stage-target =
-#$$(info STAGE: $1)
-#$$(info Create targets: $1 $(addsuffix _$1, $(DISTROS)).)
-targets_$1 = $(addsuffix _$1, $(DISTROS))
-.PHONY: $1 $$(targets_$1)
-$1: $$(targets_$1)
-$$(targets_$1): %_$1: docker/%/Dockerfile
-	#@docker image rm -f ${IMAGE}:$$*_$1 2>/dev/null
-	${DOCKER_BUILD_CMD} --target=$1 --tag ${IMAGE}:$$*_$1 -f $$< ..
+#$$(info STAGE: amd64_$1)
+#$$(info Create targets: amd64_$1 $(addsuffix _$1, $(AMD_DISTROS)).)
+targets_$1 = $(addsuffix _$1, $(AMD_DISTROS))
+.PHONY: amd64_$1 $$(targets_$1)
+amd64_$1: $$(targets_$1)
+$$(targets_$1): amd64_%_$1: docker/amd64/%/Dockerfile
+	#@docker image rm -f ${IMAGE}:amd64_$$*_$1 2>/dev/null
+	${DOCKER_BUILD_CMD} --target=$1 --tag ${IMAGE}:amd64_$$*_$1 -f $$< ..
 
-#$$(info Create targets: save_$1 $(addprefix save_, $(addsuffix _$1, $(DISTROS))) (debug).)
-save_targets_$1 = $(addprefix save_, $(addsuffix _$1, $(DISTROS)))
-.PHONY: save_$1 $$(save_targets_$1)
-save_$1: $$(save_targets_$1)
-$$(save_targets_$1): save_%_$1: cache/%/docker_$1.tar
-cache/%/docker_$1.tar: %_$1
+#$$(info Create targets: save_amd64_$1 $(addprefix save_, $(addsuffix _$1, $(AMD_DISTROS))) (debug).)
+save_targets_$1 = $(addprefix save_, $(addsuffix _$1, $(AMD_DISTROS)))
+.PHONY: save_amd64_$1 $$(save_targets_$1)
+save_amd64_$1: $$(save_targets_$1)
+$$(save_targets_$1): save_amd64_%_$1: cache/amd64/%/docker_$1.tar
+cache/amd64/%/docker_$1.tar: amd64_%_$1
 	@rm -f $$@
-	mkdir -p cache/$$*
-	docker save ${IMAGE}:$$*_$1 -o $$@
+	mkdir -p cache/amd64/$$*
+	docker save ${IMAGE}:amd64_$$*_$1 -o $$@
 
-#$$(info Create targets: $(addprefix sh_, $(addsuffix _$1, $(DISTROS))) (debug).)
-sh_targets_$1 = $(addprefix sh_, $(addsuffix _$1, $(DISTROS)))
+#$$(info Create targets: $(addprefix sh_, $(addsuffix _$1, $(AMD_DISTROS))) (debug).)
+sh_targets_$1 = $(addprefix sh_, $(addsuffix _$1, $(AMD_DISTROS)))
 .PHONY: $$(sh_targets_$1)
-$$(sh_targets_$1): sh_%_$1: %_$1
-	${DOCKER_RUN_CMD} -it --name ${IMAGE}_$$*_$1 ${IMAGE}:$$*_$1
+$$(sh_targets_$1): sh_amd64_%_$1: amd64_%_$1
+	${DOCKER_RUN_CMD} -it --name ${IMAGE}_amd64_$$*_$1 ${IMAGE}:amd64_$$*_$1
 
-#$$(info Create targets: $(addprefix clean_, $(addsuffix _$1, $(DISTROS))).)
-clean_targets_$1 = $(addprefix clean_, $(addsuffix _$1, $(DISTROS)))
-.PHONY: clean_$1 $$(clean_targets_$1)
-clean_$1: $$(clean_targets_$1)
-$$(clean_targets_$1): clean_%_$1:
-	docker image rm -f ${IMAGE}:$$*_$1 2>/dev/null
-	rm -f cache/$$*/docker_$1.tar
+#$$(info Create targets: $(addprefix clean_, $(addsuffix _$1, $(AMD_DISTROS))).)
+clean_targets_$1 = $(addprefix clean_, $(addsuffix _$1, $(AMD_DISTROS)))
+.PHONY: clean_amd64_$1 $$(clean_targets_$1)
+clean_amd64_$1: $$(clean_targets_$1)
+$$(clean_targets_$1): clean_amd64_%_$1:
+	docker image rm -f ${IMAGE}:amd64_$$*_$1 2>/dev/null
+	rm -f cache/amd64/$$*/docker_$1.tar
 endef
 
 $(foreach stage,$(STAGES),$(eval $(call make-stage-target,$(stage))))
 
 ## CLEAN ##
-clean_targets = $(addprefix clean_, $(DISTROS))
-.PHONY: clean $(clean_targets)
-clean: $(clean_targets)
+clean_amd64_targets = $(addprefix clean_, $(AMD_DISTROS))
+.PHONY: clean $(clean_amd64_targets) $(clean_arm64v8_targets)
+clean: $(clean_amd64_targets) $(clean_arm64v8_targets)
 	docker container prune -f
 	docker image prune -f
 	-rmdir cache
-$(clean_targets): clean_%: $(addprefix clean_%_, $(STAGES))
-	-rmdir cache/$*
+$(clean_amd64_targets): clean_amd64_%: $(addprefix clean_amd64_%_, $(STAGES))
+	-rmdir cache/amd64/$*
 
 .PHONY: distclean
 distclean: clean

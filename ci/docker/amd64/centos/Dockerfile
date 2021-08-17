@@ -33,7 +33,7 @@ RUN dnf -y update \
 
 # Install Python
 RUN dnf -y update \
-&& dnf -y install python36-devel \
+&& dnf -y install python39-devel \
 && dnf clean all \
 && rm -rf /var/cache/dnf
 

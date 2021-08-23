@@ -9,16 +9,19 @@
 .travis
 
 ci/cache
-ci/docker
+ci/export
+ci/doc
+#ci/docker
 ci/Makefile
+**/Dockerfile
 
 AUTHORS
 LICENSE
-README.md
+**/README.md
 doc
 
 # Native cmake build
-build
+build*
 
 # Editor directories and files
 *.user

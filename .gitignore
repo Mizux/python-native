@@ -1,7 +1,8 @@
 *.swp
 *.user
 
-build/
+build*/
+export/
 cache/
 
 .vs/

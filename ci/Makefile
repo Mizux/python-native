@@ -50,6 +50,7 @@ help:
 	@echo -e "\t\t${BOLD}arm64v8_debian${RESET} (latest)"
 	@echo -e "\t\t${BOLD}arm64v8_fedora${RESET} (latest)"
 	@echo -e "\t\t${BOLD}arm64v8_ubuntu${RESET} (latest)"
+	@echo -e "\t\t${BOLD}arm64v8_manylinux${RESET} (latest)"
 	@echo -e "\te.g. 'make arm64v8_ubuntu_test'"
 	@echo
 	@echo -e "\t${BOLD}clean${RESET}: Remove cache and ALL docker images."
@@ -141,7 +142,7 @@ $(foreach stage,$(STAGES),$(eval $(call make-stage-target,$(stage))))
 ################
 ## ARM STAGE  ##
 ################
-ARM_DISTROS = $(addprefix arm64v8_, $(DISTROS))
+ARM_DISTROS = $(addprefix arm64v8_, $(DISTROS) manylinux)
 define make-arm-stage-target =
 #$$(info STAGE: arm64v8_$1)
 #$$(info Create targets: arm64v8_$1 $(addsuffix _$1, $(ARM_DISTROS)).)
@@ -149,6 +150,7 @@ targets_$1 = $(addsuffix _$1, $(ARM_DISTROS))
 .PHONY: arm64v8_$1 $$(targets_$1)
 arm64v8_$1: $$(targets_$1)
 $$(targets_$1): arm64v8_%_$1: docker/arm64v8/%/Dockerfile
+	$$(info you may need to run: "docker run --rm --privileged multiarch/qemu-user-static --reset -p yes")
 	#@docker image rm -f ${IMAGE}:arm64v8_$$*_$1 2>/dev/null
 	${DOCKER_BUILD_CMD} --target=$1 --tag ${IMAGE}:arm64v8_$$*_$1 -f $$< ..
 

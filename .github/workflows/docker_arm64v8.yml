@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        distro: [alpine, centos, debian, fedora, ubuntu]
+        distro: [alpine, centos, debian, fedora, manylinux, ubuntu]
       fail-fast: false
     env:
       DISTRO: arm64v8_${{ matrix.distro }}

@@ -32,6 +32,7 @@ help:
 	@echo -e "\t\t${BOLD}install_devel${RESET}"
 	@echo -e "\t\t${BOLD}install_build${RESET}"
 	@echo -e "\t\t${BOLD}install_test${RESET}"
+	@echo -e "\t\t${BOLD}export${RESET}"
 	@echo -e "\te.g. 'make build'"
 	@echo
 	@echo -e "\tWith amd64 (x86_64) ${BOLD}<distro>${RESET}:"
@@ -138,6 +139,14 @@ endef
 
 $(foreach stage,$(STAGES),$(eval $(call make-stage-target,$(stage))))
 
+targets_export = $(addsuffix _export, $(AMD_DISTROS))
+.PHONY: amd64_export $(targets_export)
+amd64_export: $(targets_export)
+$(targets_export): amd64_%_export: amd64_%_build | export/%
+	${DOCKER_RUN_CMD} \
+    -v `pwd`/export/$*:/export \
+		-it ${IMAGE}:amd64_$*_build \
+		/bin/sh -c "cp build*/python/dist/*.whl /export"
 
 ################
 ## ARM STAGE  ##
@@ -181,6 +190,15 @@ endef
 
 $(foreach stage,$(STAGES),$(eval $(call make-arm-stage-target,$(stage))))
 
+targets_export = $(addsuffix _export, $(ARM_DISTROS))
+.PHONY: arm64v8_export $(targets_export)
+arm64v8_export: $(targets_export)
+$(targets_export): arm64v8_%_export: arm64v8_%_build | export/%
+	${DOCKER_RUN_CMD} \
+    -v `pwd`/export/$*:/export \
+		-it ${IMAGE}:arm64v8_$*_build \
+		/bin/sh -c "cp build*/python/dist/*.whl /export"
+
 ## MERGE ##
 define make-stage-target =
 #$$(info STAGE: $1)
@@ -190,6 +208,10 @@ $1: amd64_$1 arm64v8_$1
 endef
 
 $(foreach stage,$(STAGES),$(eval $(call make-tage-target,$(stage))))
+
+.PHONY: export
+export: amd64_export arm64v8_export
+
 ## CLEAN ##
 clean_amd64_targets = $(addprefix clean_, $(AMD_DISTROS))
 clean_arm64v8_targets = $(addprefix clean_, $(ARM_DISTROS))
@@ -198,6 +220,7 @@ clean: $(clean_amd64_targets) $(clean_arm64v8_targets)
 	docker container prune -f
 	docker image prune -f
 	-rmdir cache
+	-rm -rf export
 $(clean_amd64_targets): clean_amd64_%: $(addprefix clean_amd64_%_, $(STAGES))
 	-rmdir cache/amd64/$*
 $(clean_arm64v8_targets): clean_arm64v8_%: $(addprefix clean_arm64v8_%_, $(STAGES))

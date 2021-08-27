@@ -4,7 +4,23 @@
 set -euxo pipefail
 
 function usage() {
-  echo "Usage: $0"
+  local -r NAME=$(basename "$0")
+  echo -e "$NAME - Build using a cross toolchain.
+
+SYNOPSIS
+\t$NAME [-h|--help] [build|test|all]
+
+DESCRIPTION
+\tBuild all wheel artifacts.
+
+OPTIONS
+\t-h --help: show this help text
+\tbuild: build the project using each python (note: remove previous build dir)
+\ttest: install each wheel in a venv then test it (note: don't build !)
+\tall: build + test (default)
+
+EXAMPLES
+$0 build"
 }
 
 function contains_element() {
@@ -16,13 +32,13 @@ function contains_element() {
   local e match="$1"
   shift
   for e; do
-    [[ "$e" == "$match" ]] && echo '0' && return
+    [[ "$e" == "$match" ]] && return 0
   done
-  echo '1' && return
+  return 1
 }
 
 function build_wheel() {
-  # Build the wheel artifacts
+  # Build the wheel artifact
   # Arguments:
   #   $1 the python root directory
   if [[ "$#" -ne 1 ]]; then
@@ -30,10 +46,10 @@ function build_wheel() {
     exit 1  # TODO return error and check it outside
   fi
 
-  pwd
+  #pwd
   if [[ ! -e "CMakeLists.txt" ]] || [[ ! -d "cmake" ]]; then
-    (>&2 echo "Can't find project's CMakeLists.txt or cmake")
-    exit 1
+    >&2 echo "Can't find project's CMakeLists.txt or cmake"
+    exit 2
   fi
 
   cmake -S. -B"${BUILD_DIR}" -DPython3_ROOT_DIR="$1" -DBUILD_TESTING=OFF #--debug-find
@@ -41,7 +57,7 @@ function build_wheel() {
 }
 
 function check_wheel() {
-  # Check the wheel artifacts
+  # Check the wheel artifact
   # Arguments:
   #   $1 the python root directory
   if [[ "$#" -ne 1 ]]; then
@@ -69,20 +85,21 @@ function test_wheel() {
     exit 1  # TODO return error and check it outside
   fi
 
-  local BUILD_DIR="build_${PYTAG}"
-  local TEST_DIR="test_${PYTAG}"
+  local -r BUILD_DIR="build_${PYTAG}"
+  local -r TEST_DIR="test_${PYTAG}"
 
   # Create and activate virtualenv
-  PYBIN="$1/bin"
+  local -r PYBIN="$1/bin"
   "${PYBIN}/pip" install virtualenv
   "${PYBIN}/virtualenv" -p "${PYBIN}/python" "${TEST_DIR}"
+
   # shellcheck source=/dev/null
   source "${TEST_DIR}/bin/activate"
   pip install -U pip setuptools wheel
 
-  # Install wheel
-  pwd
-  WHEEL_FILE=$(find "${BUILD_DIR}"/python/dist/*.whl | head -1)
+  # Install the wheel artifact
+  #pwd
+  local -r WHEEL_FILE=$(find "${BUILD_DIR}"/python/dist/*.whl | head -1)
   echo "WHEEL file: ${WHEEL_FILE}"
   pip install --no-cache-dir "$WHEEL_FILE"
   pip show pythonnative
@@ -105,37 +122,67 @@ function run_tests() {
   popd
 }
 
-# Setup
-# Python scripts to be used as tests for the installed wheel. This list of files
-# has been taken from the 'test_python' make target.
-TESTS=(
-  "/home/project/ci/samples/sample.py"
-  "/home/project/python/test.py"
-)
+function build() {
+  # For each python platform provided by manylinux, build and test artifacts.
+  for PYROOT in /opt/python/*; do
+    # shellcheck disable=SC2155
+    PYTAG=$(basename "$PYROOT")
+    echo "Python: $PYTAG"
 
-SKIPS=(
-  "pp37-pypy37_pp73"
-)
+    # Check for platforms to be skipped
+    if contains_element "$PYTAG" "${SKIPS[@]}"; then
+      >&2 echo "skipping deprecated platform $PYTAG"
+      continue
+    fi
 
-# Debug
-#>&2 echo "TESTS=( ${TESTS[*]} )"
+    BUILD_DIR="build_${PYTAG}"
+    TEST_DIR="test_${PYTAG}"
+    build_wheel "$PYROOT"
+    check_wheel "$PYROOT"
+  done
+}
+
+function tests() {
+  # For each python platform provided by manylinux, build and test artifacts.
+  for PYROOT in /opt/python/*; do
+    # shellcheck disable=SC2155
+    PYTAG=$(basename "$PYROOT")
+    echo "Python: $PYTAG"
+
+    # Check for platforms to be skipped
+    if contains_element "$PYTAG" "${SKIPS[@]}"; then
+      >&2 echo "skipping deprecated platform $PYTAG"
+      continue
+    fi
+    BUILD_DIR="build_${PYTAG}"
+    TEST_DIR="test_${PYTAG}"
+
+    test_wheel "$PYROOT"
+  done
+}
 
 # Main
-# For each python platform provided by manylinux, build and test artifacts.
-for PYROOT in /opt/python/*
-do
-  PYTAG=$(basename "$PYROOT")
-  # Check for platforms to be skipped
-  _skip=$(contains_element "$PYTAG" "${SKIPS[@]}")
-  if [[ "$_skip" -eq '0' ]]; then
-    (>&2 echo "skipping deprecated platform $PYTAG")
-    continue
-  fi
-  BUILD_DIR="build_${PYTAG}"
-  TEST_DIR="test_${PYTAG}"
+function main() {
+  case ${1} in
+    -h | --help)
+      usage; exit ;;
+  esac
 
-  build_wheel "$PYROOT"
-  check_wheel "$PYROOT"
+  # Setup
+  # Python scripts to be used as tests for the installed wheel. This list of files
+  # has been taken from the 'test_python' make target.
+  declare -a TESTS=( "/home/project/ci/samples/sample.py" "/home/project/python/test.py" )
+  declare -a SKIPS=( "pp37-pypy37_pp73" )
 
-  test_wheel "$PYROOT"
-done
+  case ${1} in
+    build)
+      build ;;
+    test)
+      tests ;;
+    *)
+      build
+      tests ;;
+  esac
+}
+
+main "${1:-all}"

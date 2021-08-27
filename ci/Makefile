@@ -44,6 +44,14 @@ help:
 	@echo -e "\t\t${BOLD}amd64_ubuntu${RESET} (rolling)"
 	@echo -e "\te.g. 'make amd64_ubuntu_test'"
 	@echo
+	@echo -e "\tWith aarch64 ${BOLD}<distro>${RESET}:"
+	@echo -e "\t\t${BOLD}arm64v8_alpine${RESET} (latest)"
+	@echo -e "\t\t${BOLD}arm64v8_centos${RESET} (latest)"
+	@echo -e "\t\t${BOLD}arm64v8_debian${RESET} (latest)"
+	@echo -e "\t\t${BOLD}arm64v8_fedora${RESET} (latest)"
+	@echo -e "\t\t${BOLD}arm64v8_ubuntu${RESET} (latest)"
+	@echo -e "\te.g. 'make arm64v8_ubuntu_test'"
+	@echo
 	@echo -e "\t${BOLD}clean${RESET}: Remove cache and ALL docker images."
 	@echo -e "\t${BOLD}clean_<distro>${RESET}: Remove cache and docker images for the specified distro."
 	@echo
@@ -129,8 +137,60 @@ endef
 
 $(foreach stage,$(STAGES),$(eval $(call make-stage-target,$(stage))))
 
+
+################
+## ARM STAGE  ##
+################
+ARM_DISTROS = $(addprefix arm64v8_, $(DISTROS))
+define make-arm-stage-target =
+#$$(info STAGE: arm64v8_$1)
+#$$(info Create targets: arm64v8_$1 $(addsuffix _$1, $(ARM_DISTROS)).)
+targets_$1 = $(addsuffix _$1, $(ARM_DISTROS))
+.PHONY: arm64v8_$1 $$(targets_$1)
+arm64v8_$1: $$(targets_$1)
+$$(targets_$1): arm64v8_%_$1: docker/arm64v8/%/Dockerfile
+	#@docker image rm -f ${IMAGE}:arm64v8_$$*_$1 2>/dev/null
+	${DOCKER_BUILD_CMD} --target=$1 --tag ${IMAGE}:arm64v8_$$*_$1 -f $$< ..
+
+#$$(info Create targets: save_arm64v8_$1 $(addprefix save_, $(addsuffix _$1, $(ARM_DISTROS))) (debug).)
+save_targets_$1 = $(addprefix save_, $(addsuffix _$1, $(ARM_DISTROS)))
+.PHONY: save_arm64v8_$1 $$(save_targets_$1)
+save_arm64v8_$1: $$(save_targets_$1)
+$$(save_targets_$1): save_arm64v8_%_$1: cache/arm64v8/%/docker_$1.tar
+cache/arm64v8/%/docker_$1.tar: arm64v8_%_$1
+	@rm -f $$@
+	mkdir -p cache/arm64v8/$$*
+	docker save ${IMAGE}:arm64v8_$$*_$1 -o $$@
+
+#$$(info Create targets: $(addprefix sh_, $(addsuffix _$1, $(ARM_DISTROS))) (debug).)
+sh_targets_$1 = $(addprefix sh_, $(addsuffix _$1, $(ARM_DISTROS)))
+.PHONY: $$(sh_targets_$1)
+$$(sh_targets_$1): sh_arm64v8_%_$1: arm64v8_%_$1
+	${DOCKER_RUN_CMD} -it --name ${IMAGE}_arm64v8_$$*_$1 ${IMAGE}:arm64v8_$$*_$1
+
+#$$(info Create targets: $(addprefix clean_, $(addsuffix _$1, $(ARM_DISTROS))).)
+clean_targets_$1 = $(addprefix clean_, $(addsuffix _$1, $(ARM_DISTROS)))
+.PHONY: clean_arm64v8_$1 $$(clean_targets_$1)
+clean_arm64v8_$1: $$(clean_targets_$1)
+$$(clean_targets_$1): clean_arm64v8_%_$1:
+	docker image rm -f ${IMAGE}:arm64v8_$$*_$1 2>/dev/null
+	rm -f cache/arm64v8/$$*/docker_$1.tar
+endef
+
+$(foreach stage,$(STAGES),$(eval $(call make-arm-stage-target,$(stage))))
+
+## MERGE ##
+define make-stage-target =
+#$$(info STAGE: $1)
+.PHONY: $1
+$1: amd64_$1 arm64v8_$1
+
+endef
+
+$(foreach stage,$(STAGES),$(eval $(call make-tage-target,$(stage))))
 ## CLEAN ##
 clean_amd64_targets = $(addprefix clean_, $(AMD_DISTROS))
+clean_arm64v8_targets = $(addprefix clean_, $(ARM_DISTROS))
 .PHONY: clean $(clean_amd64_targets) $(clean_arm64v8_targets)
 clean: $(clean_amd64_targets) $(clean_arm64v8_targets)
 	docker container prune -f
@@ -138,6 +198,8 @@ clean: $(clean_amd64_targets) $(clean_arm64v8_targets)
 	-rmdir cache
 $(clean_amd64_targets): clean_amd64_%: $(addprefix clean_amd64_%_, $(STAGES))
 	-rmdir cache/amd64/$*
+$(clean_arm64v8_targets): clean_arm64v8_%: $(addprefix clean_arm64v8_%_, $(STAGES))
+	-rmdir cache/arm64v8/$*
 
 .PHONY: distclean
 distclean: clean

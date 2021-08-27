@@ -33,3 +33,12 @@ make alpine_test
 Dockerfile is splitted in several stages.
 
 ![docker](doc/deps.svg)
+
+## Docker aarch64 on x86_64 machine
+You can build and run aarch64 docker container on a x86_64 by enabling qemu support:
+
+```sh
+docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+```
+
+ref: https://github.com/multiarch/qemu-user-static#getting-started

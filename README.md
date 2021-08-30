@@ -6,8 +6,7 @@
 
 # Introduction
 
-This project aim to explain how you build a Python 3 native
-(for win-x64, linux-x64 and osx-x64) wheel package using
+This project aim to explain how you build a Python 3.6+ native wheel package using
  [`Python3`](https://www.python.org/doc/) and a [setup.py](https://setuptools.readthedocs.io/en/latest/userguide/quickstart.html).<br>
 e.g. You have a cross platform C++ library (using a CMake based build) and a
 Python wrapper on it thanks to SWIG.<br>
@@ -19,13 +18,15 @@ Python project...
 * [Requirement](#requirement)
 * [Directory Layout](#directory-layout)
 * [Build Process](#build-process)
+  * [Local Package](#local-package)
+  * [Building a native Package](#building-local-native-package)
 * [Appendices](#appendices)
-  * [Ressources](#ressources)
+  * [Resources](#resources)
 * [Misc](#misc)
 
 ## Requirement
 
-You'll need "Python >= 3.6".
+You'll need "Python >= 3.6" and few python modules ("wheel" and "absl-py").
 
 ## Directory Layout
 
@@ -53,22 +54,59 @@ The project layout is as follow:
 
 ## Build Process
 
-Since [Pypi.org](pypi.org) support multi-packages, to Create a native dependent
- package we will simply upload one package per supported platform.
+To Create a native dependent package which will contains two parts:
+* A bunch of native libraries for the supported platform targeted.
+* The Python code depending on it.
 
-### Native Package
+note: Since [Pypi.org](pypi.org) support multiple packages, we will simply upload one package per supported platform.
 
-The pipeline should be as follow:<br>
+### Local Package
+
+The pipeline for `linux-x86-64` should be as follow:<br>
 ![Local Pipeline](doc/pipeline.svg)
 ![Legend](doc/legend.svg)
+
+#### Building local native Package
+
+Thus we have the C++ shared library `libFoo.so` and the SWIG generated
+Python wrappers e.g. `pyfoo.py` in the same package.
+
+Here some dev-note concerning this `setup.py`.
+* This package is a native package containing native libraries.
+
+Then you can generate the package and install it locally using:
+```bash
+python3 setup.py bdist_wheel
+python3 -m pip install --user --find-links=dist pythonnative
+```
+
+If everything good the package (located in `<buildir>/python/dist`) should have
+this layout:
+```
+{...}/dist/pythonnative-X.Y.9999-cp3Z-cp3Z-<platform>.whl:
+\- ortools
+   \- __init__.py
+   \- .libs
+      \- libFoo.so
+   \- Foo
+      \- __init__.py
+      \- pyFoo.py
+      \- _pyFoo.so
+...
+```
+note: `<platform>` could be `manylinux2014_x86_64`, `macosx_10_9_x86_64` or `win-amd64`.
+
+tips: since wheel package are just zip archive you can use `unzip -l <package>.whl`
+to study their layout.
 
 ## Appendices
 
 Few links on the subject...
 
-### Ressources
+### Resources
 
-* [Manylinux PEP 600](https://www.python.org/dev/peps/pep-0600/)
+* [Packaging Python Project](https://packaging.python.org/tutorials/packaging-projects/)
+* [PEP 600  Future 'manylinux' Platform Tags](https://www.python.org/dev/peps/pep-0600/)
 
 ## Misc
 

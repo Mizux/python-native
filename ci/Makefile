@@ -45,11 +45,12 @@ help:
 	@echo -e "\t\t${BOLD}amd64_ubuntu${RESET} (rolling)"
 	@echo -e "\te.g. 'make amd64_ubuntu_test'"
 	@echo
-	@echo -e "\tWith aarch64 ${BOLD}<distro>${RESET}:"
+	@echo -e "\tWith arm64v8 (aarch64) ${BOLD}<distro>${RESET}:"
 	@echo -e "\t\t${BOLD}arm64v8_alpine${RESET} (latest)"
 	@echo -e "\t\t${BOLD}arm64v8_centos${RESET} (latest)"
 	@echo -e "\t\t${BOLD}arm64v8_debian${RESET} (latest)"
 	@echo -e "\t\t${BOLD}arm64v8_fedora${RESET} (latest)"
+	@echo -e "\t\t${BOLD}arm64v8_opensuse${RESET} (latest)"
 	@echo -e "\t\t${BOLD}arm64v8_ubuntu${RESET} (latest)"
 	@echo -e "\t\t${BOLD}arm64v8_manylinux${RESET} (latest)"
 	@echo -e "\te.g. 'make arm64v8_ubuntu_test'"
@@ -88,7 +89,7 @@ endif
 DOCKER_RUN_CMD := docker run --rm --init --net=host
 
 # Currently supported distro
-DISTROS = alpine centos debian fedora ubuntu
+DISTROS = alpine centos debian fedora opensuse ubuntu
 STAGES = env devel build test install_env install_devel install_build install_test
 
 # $* stem
@@ -101,7 +102,7 @@ export/%:
 ##################
 ## AMD64 STAGES ##
 ##################
-AMD_DISTROS = $(addprefix amd64_, $(DISTROS) archlinux opensuse)
+AMD_DISTROS = $(addprefix amd64_, $(DISTROS) archlinux)
 define make-stage-target =
 #$$(info STAGE: amd64_$1)
 #$$(info Create targets: amd64_$1 $(addsuffix _$1, $(AMD_DISTROS)).)
@@ -200,14 +201,14 @@ $(targets_export): arm64v8_%_export: arm64v8_%_build | export/%
 		/bin/sh -c "cp build*/python/dist/*.whl /export"
 
 ## MERGE ##
-define make-stage-target =
+define merge =
 #$$(info STAGE: $1)
 .PHONY: $1
 $1: amd64_$1 arm64v8_$1
 
 endef
 
-$(foreach stage,$(STAGES),$(eval $(call make-tage-target,$(stage))))
+$(foreach stage,$(STAGES),$(eval $(call merge,$(stage))))
 
 .PHONY: export
 export: amd64_export arm64v8_export

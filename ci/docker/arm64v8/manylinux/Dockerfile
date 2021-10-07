@@ -24,7 +24,7 @@ RUN yum -y update \
 && yum -y install pcre-devel \
 && yum clean all \
 && rm -rf /var/cache/yum \
-&& wget "https://downloads.sourceforge.net/project/swig/swig/swig-4.0.2/swig-4.0.2.tar.gz" \
+&& wget --no-check-certificate "https://downloads.sourceforge.net/project/swig/swig/swig-4.0.2/swig-4.0.2.tar.gz" \
 && tar xvf swig-4.0.2.tar.gz \
 && rm swig-4.0.2.tar.gz \
 && cd swig-4.0.2 \

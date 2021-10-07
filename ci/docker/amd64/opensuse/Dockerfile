@@ -5,9 +5,15 @@ LABEL maintainer="mizux.dev@gmail.com"
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
 RUN zypper update -y \
-&& zypper install -y git patch gcc gcc-c++ cmake \
+&& zypper install -y git patch gcc gcc-c++ \
 && zypper clean -a
 ENV CC=gcc CXX=g++
+
+# Install CMake 3.21.3
+RUN wget "https://cmake.org/files/v3.21/cmake-3.21.3-linux-x86_64.sh" \
+&& chmod a+x cmake-3.21.3-linux-x86_64.sh \
+&& ./cmake-3.21.3-linux-x86_64.sh --prefix=/usr/local/ --skip-license \
+&& rm cmake-3.21.3-linux-x86_64.sh
 
 # Install swig
 RUN zypper update -y \

@@ -66,3 +66,12 @@ if(WIN32)
 endif()
 
 include(python)
+
+option(BUILD_EXAMPLES "Build examples" ON)
+message(STATUS "Build examples: ${BUILD_EXAMPLES}")
+
+# Since examples mix all languages we must parse them once we have included all
+# <language>.cmake files
+foreach(LIB IN ITEMS Foo)
+  add_subdirectory(${LIB}/examples)
+endforeach()

@@ -5,6 +5,7 @@ swig_add_library(pyFoo
   LANGUAGE python
   OUTPUT_DIR ${CMAKE_BINARY_DIR}/$<CONFIG>/python/${PYTHON_PROJECT}/foo
   SOURCES foo.i)
+add_library(${PROJECT_NAMESPACE}::pyFoo ALIAS pyFoo)
 
 target_include_directories(pyFoo
   PRIVATE

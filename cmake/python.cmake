@@ -124,11 +124,11 @@ file(GENERATE OUTPUT ${PYTHON_PATH}/foo/__init__.py CONTENT "")
 # generator expression e.g. $<TARGET_FILE_NAME:pyFoo>
 configure_file(
   ${PROJECT_SOURCE_DIR}/python/setup.py.in
-  ${PROJECT_BINARY_DIR}/python/setup.py.in
+  ${PROJECT_BINARY_DIR}/python/setup.py
   @ONLY)
 file(GENERATE
   OUTPUT ${PROJECT_BINARY_DIR}/$<CONFIG>/python/setup.py
-  INPUT ${PROJECT_BINARY_DIR}/python/setup.py.in)
+  INPUT ${PROJECT_BINARY_DIR}/python/setup.py)
 
 #add_custom_command(
 #  OUTPUT python/setup.py
@@ -147,7 +147,6 @@ search_python_module(
 add_custom_command(
   OUTPUT $<CONFIG>/python/dist
   COMMAND ${CMAKE_COMMAND} -E remove_directory dist
-  #COMMAND ${CMAKE_COMMAND} -E make_directory dist
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_PROJECT}/.libs
   # Don't need to copy static lib on Windows.
   COMMAND ${CMAKE_COMMAND} -E $<IF:$<STREQUAL:$<TARGET_PROPERTY:foo,TYPE>,SHARED_LIBRARY>,copy,true>
@@ -156,16 +155,19 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PYTHON_PROJECT}/foo
   #COMMAND ${Python3_EXECUTABLE} setup.py bdist_egg bdist_wheel
   COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel
+  #COMMAND ${CMAKE_COMMAND} -E echo "creating ${PROJECT_BINARY_DIR}/$<CONFIG>/python/dist directory"
+  #COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/$<CONFIG>/python/dist
   MAIN_DEPENDENCY
-    foo # can't use TARGET alias here
+    python/setup.py.in
   DEPENDS
-    pyFoo
     $<CONFIG>/python/setup.py
+    pn::foo
+    pn::pyFoo
   BYPRODUCTS
     $<CONFIG>/python/${PYTHON_PROJECT}
     $<CONFIG>/python/build
     $<CONFIG>/python/${PYTHON_PROJECT}.egg-info
-    WORKING_DIRECTORY $<CONFIG>/python
+  WORKING_DIRECTORY $<CONFIG>/python
   COMMAND_EXPAND_LISTS)
 
 # Main Target

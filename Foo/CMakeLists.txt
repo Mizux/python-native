@@ -19,7 +19,7 @@ set_target_properties(Foo PROPERTIES
 add_library(${PROJECT_NAMESPACE}::Foo ALIAS Foo)
 
 if(BUILD_TESTING)
-  add_subdirectory(test)
+  add_subdirectory(tests)
 endif()
 
 # Install

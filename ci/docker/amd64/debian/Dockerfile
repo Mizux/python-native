@@ -43,7 +43,7 @@ COPY . .
 
 FROM devel AS build
 RUN cmake -version
-RUN cmake -S. -Bbuild
+RUN cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build --target all -v
 RUN cmake --build build --target install -v
 
@@ -51,7 +51,7 @@ FROM build AS test
 RUN cmake --build build --target test -v
 
 FROM env AS install_env
-COPY --from=build /home/project/build/python/dist/*.whl ./
+COPY --from=build /home/project/build/Release/python/dist/*.whl ./
 RUN python3 -m pip install --find-links=. \
  pythonnative*.whl
 

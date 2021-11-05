@@ -82,8 +82,10 @@ IMAGE := ${PROJECT}
 
 ifdef NOCACHE
 DOCKER_BUILD_CMD := docker build --no-cache
+DOCKER_BUILDX_CMD := docker buildx build --no-cache
 else
 DOCKER_BUILD_CMD := docker build
+DOCKER_BUILDX_CMD := docker buildx build
 endif
 
 DOCKER_RUN_CMD := docker run --rm --init --net=host
@@ -162,7 +164,7 @@ arm64v8_$1: $$(targets_$1)
 $$(targets_$1): arm64v8_%_$1: docker/arm64v8/%/Dockerfile
 	$$(info you may need to run: "docker run --rm --privileged multiarch/qemu-user-static --reset -p yes")
 	#@docker image rm -f ${IMAGE}:arm64v8_$$*_$1 2>/dev/null
-	${DOCKER_BUILD_CMD} --target=$1 --tag ${IMAGE}:arm64v8_$$*_$1 -f $$< ..
+	${DOCKER_BUILDX_CMD} --platform linux/arm64 --target=$1 --tag ${IMAGE}:arm64v8_$$*_$1 -f $$< ..
 
 #$$(info Create targets: save_arm64v8_$1 $(addprefix save_, $(addsuffix _$1, $(ARM_DISTROS))) (debug).)
 save_targets_$1 = $(addprefix save_, $(addsuffix _$1, $(ARM_DISTROS)))

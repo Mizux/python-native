@@ -34,7 +34,7 @@ RUN wget "https://downloads.sourceforge.net/project/swig/swig/swig-4.0.1/swig-4.
 
 # Install Python
 RUN apt-get update -qq \
-&& apt-get install -yq python3-dev python3-pip \
+&& apt-get install -yq python3-dev python3-pip python3-venv \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

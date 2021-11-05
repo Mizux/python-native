@@ -63,8 +63,8 @@ note: Since [Pypi.org](pypi.org) support multiple packages, we will simply uploa
 ### Local Package
 
 The pipeline for `linux-x86-64` should be as follow:<br>
-![Local Pipeline](doc/pipeline.svg)
-![Legend](doc/legend.svg)
+![Local Pipeline](docs/pipeline.svg)
+![Legend](docs/legend.svg)
 
 #### Building local native Package
 
@@ -112,9 +112,9 @@ Few links on the subject...
 
 Image has been generated using [plantuml](http://plantuml.com/):
 ```bash
-plantuml -Tsvg doc/{file}.dot
+plantuml -Tsvg docs/{file}.dot
 ```
-So you can find the dot source files in [doc](doc).
+So you can find the dot source files in [docs](docs).
 
 ## License
 

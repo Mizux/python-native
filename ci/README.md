@@ -1,10 +1,11 @@
 # CI: Makefile/Docker testing
+
 To test the build on various distro, I'm using docker containers and a Makefile for orchestration.
 
 pros:
-* You are independent of third party CI runner config (e.g. github actions runners or Travis-CI VM images).
-* You can run it locally on your linux system.
-* Most CI provide runner with docker and Makefile installed (e.g. Travis-CI [minimal images](https://docs.travis-ci.com/user/languages/minimal-and-generic/).
+* You are independent of third party CI runner VM images (e.g. [github actions/virtual-environments](https://github.com/actions/virtual-environments)).
+* You can run it locally on any host having a linux docker image support.
+* Most CI provide runner with docker and Makefile installed.
 
 cons:
 * Only GNU/Linux distro supported.
@@ -12,7 +13,8 @@ cons:
   * ~500MiB OS + C++/CMake tools,
   * ~150 MiB Python, wheel,
 
-# Usage
+## Usage
+
 To get the help simply type:
 ```sh
 make
@@ -23,19 +25,21 @@ note: you can also use from top directory
 make --directory=ci
 ```
 
-## Example
+### Example
+
 For example to test inside an `Alpine` container:
 ```sh
 make alpine_test
 ```
 
-# Docker layers
+## Docker layers
 Dockerfile is splitted in several stages.
 
-![docker](doc/deps.svg)
+![docker](docs/deps.svg)
 
-## Docker aarch64 on x86_64 machine
-You can build and run aarch64 docker container on a x86_64 by enabling qemu support:
+### Docker aarch64 on x86_64 machine
+
+You can build and run `arm64v8` (i.e. `aarch64`) docker container on a `x86_64` by enabling qemu support:
 
 ```sh
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes

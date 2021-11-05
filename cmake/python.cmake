@@ -113,7 +113,7 @@ endforeach()
 #######################
 ## Python Packaging  ##
 #######################
-set(PYTHON_PATH ${PROJECT_BINARY_DIR}/python/${PYTHON_PROJECT})
+set(PYTHON_PATH ${PROJECT_BINARY_DIR}/$<CONFIG>/python/${PYTHON_PROJECT})
 message(STATUS "Python project build path: ${PYTHON_PATH}")
 
 #file(MAKE_DIRECTORY python/${PYTHON_PROJECT})
@@ -127,14 +127,14 @@ configure_file(
   ${PROJECT_BINARY_DIR}/python/setup.py.in
   @ONLY)
 file(GENERATE
-  OUTPUT ${PROJECT_BINARY_DIR}/python/$<CONFIG>/setup.py
+  OUTPUT ${PROJECT_BINARY_DIR}/$<CONFIG>/python/setup.py
   INPUT ${PROJECT_BINARY_DIR}/python/setup.py.in)
 
-add_custom_command(
-  OUTPUT python/setup.py
-  DEPENDS ${PROJECT_BINARY_DIR}/python/$<CONFIG>/setup.py
-  COMMAND ${CMAKE_COMMAND} -E copy ./$<CONFIG>/setup.py setup.py
-  WORKING_DIRECTORY python)
+#add_custom_command(
+#  OUTPUT python/setup.py
+#  DEPENDS ${PROJECT_BINARY_DIR}/python/$<CONFIG>/setup.py
+#  COMMAND ${CMAKE_COMMAND} -E copy ./$<CONFIG>/setup.py setup.py
+#  WORKING_DIRECTORY python)
 
 # Look for python module wheel
 search_python_module(
@@ -145,7 +145,7 @@ search_python_module(
   PACKAGE wheel)
 
 add_custom_command(
-  OUTPUT python/dist
+  OUTPUT $<CONFIG>/python/dist
   COMMAND ${CMAKE_COMMAND} -E remove_directory dist
   #COMMAND ${CMAKE_COMMAND} -E make_directory dist
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_PROJECT}/.libs
@@ -159,20 +159,20 @@ add_custom_command(
   MAIN_DEPENDENCY
     foo # can't use TARGET alias here
   DEPENDS
-    python/setup.py
+    pyFoo
+    $<CONFIG>/python/setup.py
   BYPRODUCTS
-    python/${PYTHON_PROJECT}
-    python/build
-    python/dist
-    python/${PYTHON_PROJECT}.egg-info
-  WORKING_DIRECTORY python
+    $<CONFIG>/python/${PYTHON_PROJECT}
+    $<CONFIG>/python/build
+    $<CONFIG>/python/${PYTHON_PROJECT}.egg-info
+    WORKING_DIRECTORY $<CONFIG>/python
   COMMAND_EXPAND_LISTS)
 
 # Main Target
 add_custom_target(python_package ALL
   DEPENDS
-    python/dist
-  WORKING_DIRECTORY python)
+    $<CONFIG>/python/dist
+  WORKING_DIRECTORY $<CONFIG>/python)
 
 ###################
 ##  Python Test  ##
@@ -181,7 +181,7 @@ if(BUILD_TESTING)
   search_python_internal_module(NAME venv)
   # Testing using a vitual environment
   set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m venv)
-  set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/python/venv)
+  set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/python/venv)
   if(WIN32)
     set(VENV_Python3_EXECUTABLE "${VENV_DIR}\\Scripts\\python.exe")
   else()
@@ -194,7 +194,7 @@ if(BUILD_TESTING)
     COMMAND ${VENV_EXECUTABLE} ${VENV_DIR}
     # Must NOT call it in a folder containing the setup.py otherwise pip call it
     # (i.e. "python setup.py bdist") while we want to consume the wheel package
-    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install --find-links=${CMAKE_CURRENT_BINARY_DIR}/python/dist ${PYTHON_PROJECT}
+    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install --find-links=${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/python/dist ${PYTHON_PROJECT}
     BYPRODUCTS ${VENV_DIR}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Create venv and install ${PYTHON_PROJECT}"

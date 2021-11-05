@@ -71,6 +71,9 @@ if(WIN32)
   include(swig)
 endif()
 
+option(FETCH_PYTHON_DEPS "Install python required modules if not available" ON)
+message(STATUS "Python fetch dependencies: ${FETCH_PYTHON_DEPS}")
+
 include(python)
 
 option(BUILD_EXAMPLES "Build examples" ON)

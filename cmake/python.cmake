@@ -199,19 +199,26 @@ if(BUILD_TESTING)
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Create venv and install ${PYTHON_PROJECT}"
     VERBATIM)
-
-  add_custom_command(TARGET python_package POST_BUILD
-    DEPENDS python/test.py
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/python/test.py ${VENV_DIR}/test.py
-    BYPRODUCTS ${VENV_DIR}/test.py
-    WORKING_DIRECTORY python
-    COMMENT "Copying test.py"
-    VERBATIM)
-
-  # run the tests within the virtualenv
-  add_test(NAME python_test
-    COMMAND ${VENV_Python3_EXECUTABLE} ${VENV_DIR}/test.py)
 endif()
+
+# add_python_test()
+# CMake function to generate and build python test.
+# Parameters:
+#  the python filename
+# e.g.:
+# add_python_test(foo.py)
+function(add_python_test FILE_NAME)
+  message(STATUS "Configuring test ${FILE_NAME} ...")
+  get_filename_component(EXAMPLE_NAME ${FILE_NAME} NAME_WE)
+
+  if(BUILD_TESTING)
+    add_test(
+      NAME python_test_${EXAMPLE_NAME}
+      COMMAND ${VENV_Python3_EXECUTABLE} ${FILE_NAME}
+      WORKING_DIRECTORY ${VENV_DIR})
+  endif()
+  message(STATUS "Configuring test ${FILE_NAME} done")
+endfunction()
 
 # add_python_example()
 # CMake function to generate and build python example.

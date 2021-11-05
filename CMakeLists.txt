@@ -79,4 +79,5 @@ include(python)
 option(BUILD_EXAMPLES "Build examples" ON)
 message(STATUS "Build examples: ${BUILD_EXAMPLES}")
 
+add_subdirectory(tests)
 add_subdirectory(examples)

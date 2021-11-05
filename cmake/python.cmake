@@ -222,13 +222,10 @@ endif()
 function(add_python_example FILE_NAME)
   message(STATUS "Configuring example ${FILE_NAME} ...")
   get_filename_component(EXAMPLE_NAME ${FILE_NAME} NAME_WE)
-  get_filename_component(EXAMPLE_DIR ${FILE_NAME} DIRECTORY)
-  get_filename_component(COMPONENT_DIR ${EXAMPLE_DIR} DIRECTORY)
-  get_filename_component(COMPONENT_NAME ${COMPONENT_DIR} NAME)
 
   if(BUILD_TESTING)
     add_test(
-      NAME python_${COMPONENT_NAME}_${EXAMPLE_NAME}
+      NAME python_example_${EXAMPLE_NAME}
       COMMAND ${VENV_Python3_EXECUTABLE} ${FILE_NAME}
       WORKING_DIRECTORY ${VENV_DIR})
   endif()

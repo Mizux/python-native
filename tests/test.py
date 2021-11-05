@@ -2,6 +2,7 @@
 '''Test APIs'''
 
 import unittest
+import pythonnative
 import pythonnative.Foo.pyFoo as foo
 
 if __debug__:
@@ -64,4 +65,5 @@ class TestFoo(unittest.TestCase):
         self.assertEqual(f.get_int64(), 31)
 
 if __name__ == '__main__':
+    print(pythonnative.__version__)
     unittest.main(verbosity=2)

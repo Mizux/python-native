@@ -22,6 +22,18 @@ if(NOT CMAKE_BUILD_TYPE)
     FORCE)
 endif()
 
+get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(isMultiConfig)
+  if(NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES "Release;Debug" CACHE STRING
+    "Choose the type of builds (default: Release;Debug)"
+    FORCE)
+  endif()
+  message(STATUS "Configuration types: ${CMAKE_CONFIGURATION_TYPES}")
+else()
+  message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+endif()
+
 # Layout build dir like install dir
 include(GNUInstallDirs)
 if(UNIX)

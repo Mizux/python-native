@@ -1,14 +1,15 @@
-import pythonnative.Foo.pyFoo as foo
-print(f'pyFoo: ${dir(foo)}')
+from pythonnative.foo.pyFoo import *
 
-p = foo.IntPair(3, 5)
+print(f'Foo: ${dir(Foo)}')
+
+p = IntPair(3, 5)
 print(f"class IntPair: {dir(p)}")
 print(f"p: {p}")
 
-foo.free_function(2147483647) # max int
-foo.free_function(2147483647+1) # max int + 1
+free_function(2147483647) # max int
+free_function(2147483647+1) # max int + 1
 
-f = foo.Foo()
+f = Foo()
 print(f'class Foo: ${dir(f)}')
 f.static_function(1)
 f.static_function(2147483647)

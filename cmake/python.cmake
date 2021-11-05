@@ -106,7 +106,7 @@ set(PYTHON_PROJECT pythonnative)
 message(STATUS "Python project: ${PYTHON_PROJECT}")
 
 # Swig wrap all libraries
-foreach(SUBPROJECT IN ITEMS Foo)
+foreach(SUBPROJECT IN ITEMS foo)
   add_subdirectory(${SUBPROJECT}/python)
 endforeach()
 
@@ -118,7 +118,7 @@ message(STATUS "Python project build path: ${PYTHON_PATH}")
 
 #file(MAKE_DIRECTORY python/${PYTHON_PROJECT})
 file(GENERATE OUTPUT ${PYTHON_PATH}/__init__.py CONTENT "__version__ = \"${PROJECT_VERSION}\"\n")
-file(GENERATE OUTPUT ${PYTHON_PATH}/Foo/__init__.py CONTENT "")
+file(GENERATE OUTPUT ${PYTHON_PATH}/foo/__init__.py CONTENT "")
 
 # setup.py.in contains cmake variable e.g. @PYTHON_PROJECT@ and
 # generator expression e.g. $<TARGET_FILE_NAME:pyFoo>
@@ -150,14 +150,14 @@ add_custom_command(
   #COMMAND ${CMAKE_COMMAND} -E make_directory dist
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_PROJECT}/.libs
   # Don't need to copy static lib on Windows.
-  COMMAND ${CMAKE_COMMAND} -E $<IF:$<STREQUAL:$<TARGET_PROPERTY:Foo,TYPE>,SHARED_LIBRARY>,copy,true>
-  $<$<STREQUAL:$<TARGET_PROPERTY:Foo,TYPE>,SHARED_LIBRARY>:$<TARGET_SONAME_FILE:Foo>>
+  COMMAND ${CMAKE_COMMAND} -E $<IF:$<STREQUAL:$<TARGET_PROPERTY:foo,TYPE>,SHARED_LIBRARY>,copy,true>
+  $<$<STREQUAL:$<TARGET_PROPERTY:foo,TYPE>,SHARED_LIBRARY>:$<TARGET_SONAME_FILE:foo>>
   ${PYTHON_PROJECT}/.libs
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PYTHON_PROJECT}/Foo
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PYTHON_PROJECT}/foo
   #COMMAND ${Python3_EXECUTABLE} setup.py bdist_egg bdist_wheel
   COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel
   MAIN_DEPENDENCY
-    Foo # can't use TARGET alias here
+    foo # can't use TARGET alias here
   DEPENDS
     python/setup.py
   BYPRODUCTS

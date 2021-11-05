@@ -24,7 +24,7 @@ if(CHECK_TYPE)
   cmake_pop_check_state()
 endif()
 
-add_subdirectory(Foo)
+add_subdirectory(foo)
 
 # Install
 include(GNUInstallDirs)

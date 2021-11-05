@@ -24,7 +24,7 @@ setup(
   packages=find_packages(),
   package_data={
   '@PYTHON_PROJECT@':[$<$<NOT:$<PLATFORM_ID:Windows>>:'.libs/*'>],
-  '@PYTHON_PROJECT@.Foo':['$<TARGET_FILE_NAME:pyFoo>'],
+  '@PYTHON_PROJECT@.foo':['$<TARGET_FILE_NAME:pyFoo>'],
   },
   include_package_data=True,
   classifiers=[

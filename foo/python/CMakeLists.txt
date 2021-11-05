@@ -3,7 +3,7 @@ set_property(SOURCE foo.i PROPERTY SWIG_MODULE_NAME pyFoo)
 swig_add_library(pyFoo
   TYPE SHARED
   LANGUAGE python
-  OUTPUT_DIR ${CMAKE_BINARY_DIR}/python/${PYTHON_PROJECT}/Foo
+  OUTPUT_DIR ${CMAKE_BINARY_DIR}/python/${PYTHON_PROJECT}/foo
   SOURCES foo.i)
 
 target_include_directories(pyFoo
@@ -27,7 +27,7 @@ elseif(UNIX)
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../../${PYTHON_PROJECT}/.libs"
     )
 endif()
-target_link_libraries(pyFoo PRIVATE ${PROJECT_NAMESPACE}::Foo)
+target_link_libraries(pyFoo PRIVATE ${PROJECT_NAMESPACE}::foo)
 
 # Variable PYTHON_LIBRARIES can contains keyword `optimized`
 # which won't be interpreted inside a generator expression.

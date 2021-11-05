@@ -4,9 +4,6 @@
 .git
 .gitignore
 .github
-.appveyor.yml
-.travis.yml
-.travis
 
 ci/cache
 ci/export

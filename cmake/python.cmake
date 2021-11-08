@@ -145,7 +145,7 @@ search_python_module(
   PACKAGE wheel)
 
 add_custom_command(
-  OUTPUT python/dist
+  OUTPUT python/dist/timestamp
   COMMAND ${CMAKE_COMMAND} -E remove_directory dist
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_PROJECT}/.libs
   # Don't need to copy static lib on Windows.
@@ -155,8 +155,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PYTHON_PROJECT}/foo
   #COMMAND ${Python3_EXECUTABLE} setup.py bdist_egg bdist_wheel
   COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel
-  #COMMAND ${CMAKE_COMMAND} -E echo "creating ${PROJECT_BINARY_DIR}/python/dist directory"
-  #COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/python/dist
+  COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/python/dist/timestamp
   MAIN_DEPENDENCY
     python/setup.py.in
   DEPENDS
@@ -165,15 +164,16 @@ add_custom_command(
     pn::pyFoo
   BYPRODUCTS
     python/${PYTHON_PROJECT}
-    python/build
     python/${PYTHON_PROJECT}.egg-info
+    python/build
+    python/dist
   WORKING_DIRECTORY python
   COMMAND_EXPAND_LISTS)
 
 # Main Target
 add_custom_target(python_package ALL
   DEPENDS
-    python/dist
+    python/dist/timestamp
   WORKING_DIRECTORY python)
 
 ###################

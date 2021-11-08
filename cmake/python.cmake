@@ -180,9 +180,12 @@ add_custom_target(python_package ALL
 ##  Python Test  ##
 ###################
 if(BUILD_TESTING)
-  search_python_internal_module(NAME venv)
+  search_python_module(NAME virtualenv PACKAGE virtualenv)
+  # venv not working on github runners
+  # search_python_internal_module(NAME venv)
   # Testing using a vitual environment
-  set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m venv)
+  set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m virtualenv)
+  #set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m venv)
   set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/python/venv)
   if(WIN32)
     set(VENV_Python3_EXECUTABLE ${VENV_DIR}/Scripts/python.exe)
@@ -193,7 +196,8 @@ if(BUILD_TESTING)
   add_custom_command(TARGET python_package POST_BUILD
     # Clean previous install otherwise pip install may do nothing
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${VENV_DIR}
-    COMMAND ${VENV_EXECUTABLE} ${VENV_DIR}
+    COMMAND ${VENV_EXECUTABLE} -p ${Python3_EXECUTABLE} ${VENV_DIR}
+    #COMMAND ${VENV_EXECUTABLE} ${VENV_DIR}
     # Must NOT call it in a folder containing the setup.py otherwise pip call it
     # (i.e. "python setup.py bdist") while we want to consume the wheel package
     COMMAND ${VENV_Python3_EXECUTABLE} -m pip install --find-links=${CMAKE_CURRENT_BINARY_DIR}/python/dist ${PYTHON_PROJECT}

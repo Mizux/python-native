@@ -113,27 +113,27 @@ endforeach()
 #######################
 ## Python Packaging  ##
 #######################
-set(PYTHON_PATH ${PROJECT_BINARY_DIR}/$<CONFIG>/python/${PYTHON_PROJECT})
-message(STATUS "Python project build path: ${PYTHON_PATH}")
+set(PYTHON_PROJECT_PATH ${PROJECT_BINARY_DIR}/python/${PYTHON_PROJECT})
+message(STATUS "Python project build path: ${PYTHON_PROJECT_PATH}")
 
 #file(MAKE_DIRECTORY python/${PYTHON_PROJECT})
-file(GENERATE OUTPUT ${PYTHON_PATH}/__init__.py CONTENT "__version__ = \"${PROJECT_VERSION}\"\n")
-file(GENERATE OUTPUT ${PYTHON_PATH}/foo/__init__.py CONTENT "")
+file(GENERATE OUTPUT ${PYTHON_PROJECT_PATH}/__init__.py CONTENT "__version__ = \"${PROJECT_VERSION}\"\n")
+file(GENERATE OUTPUT ${PYTHON_PROJECT_PATH}/foo/__init__.py CONTENT "")
 
 # setup.py.in contains cmake variable e.g. @PYTHON_PROJECT@ and
 # generator expression e.g. $<TARGET_FILE_NAME:pyFoo>
 configure_file(
   ${PROJECT_SOURCE_DIR}/python/setup.py.in
-  ${PROJECT_BINARY_DIR}/python/setup.py
+  ${PROJECT_BINARY_DIR}/python/setup.py.in
   @ONLY)
 file(GENERATE
-  OUTPUT ${PROJECT_BINARY_DIR}/$<CONFIG>/python/setup.py
-  INPUT ${PROJECT_BINARY_DIR}/python/setup.py)
+  OUTPUT ${PROJECT_BINARY_DIR}/python/setup.py
+  INPUT ${PROJECT_BINARY_DIR}/python/setup.py.in)
 
 #add_custom_command(
 #  OUTPUT python/setup.py
-#  DEPENDS ${PROJECT_BINARY_DIR}/python/$<CONFIG>/setup.py
-#  COMMAND ${CMAKE_COMMAND} -E copy ./$<CONFIG>/setup.py setup.py
+#  DEPENDS ${PROJECT_BINARY_DIR}/python/setup.py
+#  COMMAND ${CMAKE_COMMAND} -E copy setup.py setup.py
 #  WORKING_DIRECTORY python)
 
 # Look for python module wheel
@@ -145,7 +145,7 @@ search_python_module(
   PACKAGE wheel)
 
 add_custom_command(
-  OUTPUT $<CONFIG>/python/dist
+  OUTPUT python/dist
   COMMAND ${CMAKE_COMMAND} -E remove_directory dist
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_PROJECT}/.libs
   # Don't need to copy static lib on Windows.
@@ -155,26 +155,26 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PYTHON_PROJECT}/foo
   #COMMAND ${Python3_EXECUTABLE} setup.py bdist_egg bdist_wheel
   COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel
-  #COMMAND ${CMAKE_COMMAND} -E echo "creating ${PROJECT_BINARY_DIR}/$<CONFIG>/python/dist directory"
-  #COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/$<CONFIG>/python/dist
+  #COMMAND ${CMAKE_COMMAND} -E echo "creating ${PROJECT_BINARY_DIR}/python/dist directory"
+  #COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/python/dist
   MAIN_DEPENDENCY
     python/setup.py.in
   DEPENDS
-    $<CONFIG>/python/setup.py
+    python/setup.py
     pn::foo
     pn::pyFoo
   BYPRODUCTS
-    $<CONFIG>/python/${PYTHON_PROJECT}
-    $<CONFIG>/python/build
-    $<CONFIG>/python/${PYTHON_PROJECT}.egg-info
-  WORKING_DIRECTORY $<CONFIG>/python
+    python/${PYTHON_PROJECT}
+    python/build
+    python/${PYTHON_PROJECT}.egg-info
+  WORKING_DIRECTORY python
   COMMAND_EXPAND_LISTS)
 
 # Main Target
 add_custom_target(python_package ALL
   DEPENDS
-    $<CONFIG>/python/dist
-  WORKING_DIRECTORY $<CONFIG>/python)
+    python/dist
+  WORKING_DIRECTORY python)
 
 ###################
 ##  Python Test  ##
@@ -183,7 +183,7 @@ if(BUILD_TESTING)
   search_python_internal_module(NAME venv)
   # Testing using a vitual environment
   set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m venv)
-  set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/python/venv)
+  set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/python/venv)
   if(WIN32)
     set(VENV_Python3_EXECUTABLE "${VENV_DIR}\\Scripts\\python.exe")
   else()
@@ -196,7 +196,7 @@ if(BUILD_TESTING)
     COMMAND ${VENV_EXECUTABLE} ${VENV_DIR}
     # Must NOT call it in a folder containing the setup.py otherwise pip call it
     # (i.e. "python setup.py bdist") while we want to consume the wheel package
-    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install --find-links=${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/python/dist ${PYTHON_PROJECT}
+    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install --find-links=${CMAKE_CURRENT_BINARY_DIR}/python/dist ${PYTHON_PROJECT}
     BYPRODUCTS ${VENV_DIR}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Create venv and install ${PYTHON_PROJECT}"

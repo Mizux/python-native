@@ -33,7 +33,6 @@ if(CHECK_TYPE)
   cmake_pop_check_state()
 endif()
 
-add_subdirectory(foo)
 if(BUILD_TESTING)
   include(FetchContent)
   #FetchContent_Declare(
@@ -88,6 +87,8 @@ function(add_cpp_test FILE_NAME)
   endif()
   message(STATUS "Configuring test ${FILE_NAME}: ...DONE")
 endfunction()
+
+add_subdirectory(foo)
 
 # Install
 install(EXPORT ${PROJECT_NAME}Targets

@@ -171,7 +171,7 @@ function main() {
   # Setup
   # Python scripts to be used as tests for the installed wheel. This list of files
   # has been taken from the 'test_python' make target.
-  declare -a TESTS=( "/home/project/ci/samples/sample.py" "/home/project/python/test.py" )
+  declare -a TESTS=( "/home/project/ci/samples/sample.py" "/home/project/tests/test.py" )
   declare -a SKIPS=( "pp37-pypy37_pp73" )
 
   case ${1} in

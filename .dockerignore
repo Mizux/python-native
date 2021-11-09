@@ -4,21 +4,25 @@
 .git
 .gitignore
 .github
+.clang-format
 
+ci/Makefile
+#ci/docker
+**/Dockerfile
+ci/doc
 ci/cache
 ci/export
-ci/doc
-#ci/docker
-ci/Makefile
-**/Dockerfile
 
 AUTHORS
+CONTRIBUTING.md
+CONTRIBUTORS
 LICENSE
-**/README.md
+README.md
 doc
 
 # Native cmake build
-build*
+build/
+build*/
 
 # Editor directories and files
 *.user

@@ -1,5 +1,5 @@
 # ref: https://github.com/docker-library/official-images
-name: Docker Linux x86-64
+name: amd64 Docker
 
 on:
   push:
@@ -28,11 +28,11 @@ jobs:
     - name: Test project
       run: make --directory=ci ${DISTRO}_test
 
-    - name: Build env Install
+    - name: Build install env image
       run: make --directory=ci ${DISTRO}_install_env
-    - name: Build devel Install
+    - name: Build install devel project
       run: make --directory=ci ${DISTRO}_install_devel
-    - name: Build Install
+    - name: Build install project
       run: make --directory=ci ${DISTRO}_install_build
-    - name: Test Install
+    - name: Test install project
       run: make --directory=ci ${DISTRO}_install_test

@@ -28,7 +28,7 @@ elseif(UNIX)
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../../${PYTHON_PROJECT}/.libs"
     )
 endif()
-target_link_libraries(pyFoo PRIVATE ${PROJECT_NAMESPACE}::foo)
+target_link_libraries(pyFoo PRIVATE ${PROJECT_NAMESPACE}::Foo)
 
 # Variable PYTHON_LIBRARIES can contains keyword `optimized`
 # which won't be interpreted inside a generator expression.

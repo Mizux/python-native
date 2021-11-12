@@ -78,9 +78,7 @@ function(add_cpp_test FILE_NAME)
   target_compile_features(${TEST_NAME} PRIVATE cxx_std_17)
   target_link_libraries(${TEST_NAME} PRIVATE
     Catch2 Catch2WithMain
-    ${PROJECT_NAMESPACE}::Foo
-    ${PROJECT_NAMESPACE}::Bar
-    ${PROJECT_NAMESPACE}::FooBar)
+    ${PROJECT_NAMESPACE}::Foo)
 
   if(BUILD_TESTING)
     add_test(NAME cpp_${COMPONENT_NAME}_${TEST_NAME} COMMAND ${TEST_NAME})
@@ -88,7 +86,7 @@ function(add_cpp_test FILE_NAME)
   message(STATUS "Configuring test ${FILE_NAME}: ...DONE")
 endfunction()
 
-add_subdirectory(foo)
+add_subdirectory(Foo)
 
 # Install
 install(EXPORT ${PROJECT_NAME}Targets

@@ -106,7 +106,7 @@ set(PYTHON_PROJECT pythonnative)
 message(STATUS "Python project: ${PYTHON_PROJECT}")
 
 # Swig wrap all libraries
-foreach(SUBPROJECT IN ITEMS foo)
+foreach(SUBPROJECT IN ITEMS Foo)
   add_subdirectory(${SUBPROJECT}/python)
 endforeach()
 
@@ -149,8 +149,8 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E remove_directory dist
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_PROJECT}/.libs
   # Don't need to copy static lib on Windows.
-  COMMAND ${CMAKE_COMMAND} -E $<IF:$<STREQUAL:$<TARGET_PROPERTY:foo,TYPE>,SHARED_LIBRARY>,copy,true>
-  $<$<STREQUAL:$<TARGET_PROPERTY:foo,TYPE>,SHARED_LIBRARY>:$<TARGET_SONAME_FILE:foo>>
+  COMMAND ${CMAKE_COMMAND} -E $<IF:$<STREQUAL:$<TARGET_PROPERTY:Foo,TYPE>,SHARED_LIBRARY>,copy,true>
+  $<$<STREQUAL:$<TARGET_PROPERTY:Foo,TYPE>,SHARED_LIBRARY>:$<TARGET_SONAME_FILE:Foo>>
   ${PYTHON_PROJECT}/.libs
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PYTHON_PROJECT}/foo
   #COMMAND ${Python3_EXECUTABLE} setup.py bdist_egg bdist_wheel
@@ -160,8 +160,8 @@ add_custom_command(
     python/setup.py.in
   DEPENDS
     python/setup.py
-    pn::foo
-    pn::pyFoo
+    ${PROJECT_NAMESPACE}::Foo
+    ${PROJECT_NAMESPACE}::pyFoo
   BYPRODUCTS
     python/${PYTHON_PROJECT}
     python/${PYTHON_PROJECT}.egg-info

@@ -156,20 +156,15 @@ void freeFunction(int64_t level) {
 }
 
 void Foo::staticFunction(int level) {
-  std::cout << "[" << level << "] Enter Foo::staticFunction(int)" << std::endl;
+  std::cout << "[" << level << "] Enter " << __func__ << "(int)" << std::endl;
   freeFunction(level + 1);
-  std::cout << "[" << level << "] Exit Foo::staticFunction(int)" << std::endl;
+  std::cout << "[" << level << "] Exit " << __func__ << "(int)" << std::endl;
 }
 
 void Foo::staticFunction(int64_t level) {
-  std::cout << "[" << level << "] Enter Foo::staticFunction(int64_t)" << std::endl;
+  std::cout << "[" << level << "] Enter " << __func__ << "(int64_t)" << std::endl;
   freeFunction(level + 1);
-  std::cout << "[" << level << "] Exit Foo::staticFunction(int64_t)" << std::endl;
-}
-
-std::string Foo::operator()() const {
-  return std::string{"\"Foo\":{\"int\":"} + std::to_string(_intValue) +
-         ",\"int64\":" + std::to_string(_int64Value) + "}";
+  std::cout << "[" << level << "] Exit " << __func__ << "(int64_t)" << std::endl;
 }
 
 int Foo::getInt() const {
@@ -186,6 +181,11 @@ int64_t Foo::getInt64() const {
 
 void Foo::setInt64(int64_t input) {
   _int64Value = input;
+}
+
+std::string Foo::operator()() const {
+  return std::string{"\"Foo\":{\"int\":"} + std::to_string(_intValue) +
+         ",\"int64\":" + std::to_string(_int64Value) + "}";
 }
 
 } // namespace foo

@@ -22,8 +22,6 @@ jobs:
         echo "$((Get-Item .).FullName)/swigwin-4.0.2" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     - name: Check swig
       run: swig -version
-    - name: Check mvn
-      run: mvn.cmd --version
     - name: Configure
       run: cmake -S. -Bbuild -G "Visual Studio 16 2019" -DCMAKE_CONFIGURATION_TYPES=Release
     - name: Build

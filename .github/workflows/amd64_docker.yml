@@ -19,6 +19,10 @@ jobs:
       DISTRO: amd64_${{ matrix.distro }}
     steps:
     - uses: actions/checkout@v2
+    - name: Check docker
+      run: |
+        docker info
+        docker buildx ls
     - name: Build env image
       run: make --directory=ci ${DISTRO}_env
     - name: Build devel project

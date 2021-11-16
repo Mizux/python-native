@@ -1,31 +1,32 @@
-# To build it on x86_64 please read
-# https://github.com/multiarch/qemu-user-static#getting-started
 # Create a virtual environment with all tools installed
-# ref: https://hub.docker.com/r/arm64v8/ubuntu
-FROM arm64v8/ubuntu:rolling AS env
+# ref: https://hub.docker.com/_/debian
+FROM debian:latest AS env
 LABEL maintainer="mizux.dev@gmail.com"
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
-RUN apt-get update -q \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -yq git wget libssl-dev build-essential \
+RUN apt-get update -qq \
+&& apt-get install -yq git wget libssl-dev build-essential cmake \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Install CMake 3.21.1
-RUN wget "https://cmake.org/files/v3.21/cmake-3.21.1-linux-aarch64.sh" \
-&& chmod a+x cmake-3.21.1-linux-aarch64.sh \
-&& ./cmake-3.21.1-linux-aarch64.sh --prefix=/usr/local/ --skip-license \
-&& rm cmake-3.21.1-linux-aarch64.sh
 
 # Install swig
 RUN apt-get update -qq \
-&& apt-get install -yq swig \
+&& apt-get install -yq libpcre3-dev \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN wget "https://downloads.sourceforge.net/project/swig/swig/swig-4.0.2/swig-4.0.2.tar.gz" \
+&& tar xvf swig-4.0.2.tar.gz \
+&& rm swig-4.0.2.tar.gz \
+&& cd swig-4.0.2 \
+&& ./configure --prefix=/usr \
+&& make -j 4 \
+&& make install \
+&& cd .. \
+&& rm -rf swig-4.0.2
 
 # Install Python
 RUN apt-get update -qq \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -yq python3-dev python3-pip python3-venv \
+&& apt-get install -yq python3-dev python3-pip python3-venv \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -36,20 +37,21 @@ COPY . .
 
 FROM devel AS build
 RUN cmake -version
-RUN cmake -S. -Bbuild
+RUN cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build --target all -v
 RUN cmake --build build --target install -v
 
 FROM build AS test
 RUN cmake --build build --target test -v
 
+# Test install rules
 FROM env AS install_env
 COPY --from=build /home/project/build/python/dist/*.whl ./
 RUN python3 -m pip install --find-links=. \
  pythonnative*.whl
 
 FROM install_env AS install_devel
-WORKDIR /home/sample
+WORKDIR /home/samples
 COPY ci/samples .
 
 FROM install_devel AS install_build

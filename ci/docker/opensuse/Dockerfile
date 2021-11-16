@@ -1,16 +1,23 @@
 # Create a virtual environment with all tools installed
-# ref: https://hub.docker.com/_/alpine
-FROM alpine:edge AS env
+# ref: https://hub.docker.com/r/opensuse/tumbleweed
+FROM opensuse/leap AS env
 LABEL maintainer="mizux.dev@gmail.com"
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
-RUN apk add --no-cache git build-base linux-headers cmake
+RUN zypper update -y \
+&& zypper install -y git patch gcc gcc-c++ cmake wget gzip tar \
+&& zypper clean -a
+ENV CC=gcc CXX=g++
 
 # Install swig
-RUN apk add --no-cache swig
+RUN zypper update -y \
+&& zypper install -y swig \
+&& zypper clean -a
 
 # Install Python
-RUN apk add --no-cache python3-dev py3-pip
+RUN zypper update -y \
+&& zypper install -y python3 python3-pip python3-devel \
+&& zypper clean -a
 
 # Add the library src to our build env
 FROM env AS devel
@@ -26,13 +33,14 @@ RUN cmake --build build --target install -v
 FROM build AS test
 RUN cmake --build build --target test -v
 
+# Test install rules
 FROM env AS install_env
 COPY --from=build /home/project/build/python/dist/*.whl ./
 RUN python3 -m pip install --find-links=. \
  pythonnative*.whl
 
 FROM install_env AS install_devel
-WORKDIR /home/sample
+WORKDIR /home/samples
 COPY ci/samples .
 
 FROM install_devel AS install_build

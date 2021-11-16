@@ -1,29 +1,36 @@
 # Create a virtual environment with all tools installed
-# ref: https://hub.docker.com/r/opensuse/tumbleweed
-FROM opensuse/leap AS env
+# ref: https://hub.docker.com/_/centos
+FROM centos:latest AS env
 LABEL maintainer="mizux.dev@gmail.com"
+
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
-RUN zypper update -y \
-&& zypper install -y git patch gcc gcc-c++ cmake wget gzip tar \
-&& zypper clean -a
-ENV CC=gcc CXX=g++
+RUN dnf -y update \
+&& dnf -y install git wget openssl-devel cmake \
+&& dnf -y groupinstall "Development Tools" \
+&& dnf clean all \
+&& rm -rf /var/cache/dnf
 
-# Install CMake 3.21.3
-RUN wget --no-check-certificate "https://cmake.org/files/v3.21/cmake-3.21.3-linux-x86_64.sh" \
-&& chmod a+x cmake-3.21.3-linux-x86_64.sh \
-&& ./cmake-3.21.3-linux-x86_64.sh --prefix=/usr/local/ --skip-license \
-&& rm cmake-3.21.3-linux-x86_64.sh
-
-# Install swig
-RUN zypper update -y \
-&& zypper install -y swig \
-&& zypper clean -a
+# Install SWIG 4.0.2
+RUN dnf -y update \
+&& dnf -y install pcre-devel \
+&& dnf clean all \
+&& rm -rf /var/cache/dnf \
+&& wget "https://downloads.sourceforge.net/project/swig/swig/swig-4.0.2/swig-4.0.2.tar.gz" \
+&& tar xvf swig-4.0.2.tar.gz \
+&& rm swig-4.0.2.tar.gz \
+&& cd swig-4.0.2 \
+&& ./configure --prefix=/usr \
+&& make -j 4 \
+&& make install \
+&& cd .. \
+&& rm -rf swig-4.0.2
 
 # Install Python
-RUN zypper update -y \
-&& zypper install -y python3 python3-pip python3-devel \
-&& zypper clean -a
+RUN dnf -y update \
+&& dnf -y install python39-devel \
+&& dnf clean all \
+&& rm -rf /var/cache/dnf
 
 # Add the library src to our build env
 FROM env AS devel
@@ -39,13 +46,14 @@ RUN cmake --build build --target install -v
 FROM build AS test
 RUN cmake --build build --target test -v
 
+# Test install rules
 FROM env AS install_env
 COPY --from=build /home/project/build/python/dist/*.whl ./
 RUN python3 -m pip install --find-links=. \
  pythonnative*.whl
 
 FROM install_env AS install_devel
-WORKDIR /home/sample
+WORKDIR /home/samples
 COPY ci/samples .
 
 FROM install_devel AS install_build

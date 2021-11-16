@@ -34,13 +34,14 @@ RUN cmake --build build --target install -v
 FROM build AS test
 RUN cmake --build build --target test -v
 
+# Test install rules
 FROM env AS install_env
 COPY --from=build /home/project/build/python/dist/*.whl ./
 RUN python3 -m pip install --find-links=. \
  pythonnative*.whl
 
 FROM install_env AS install_devel
-WORKDIR /home/sample
+WORKDIR /home/samples
 COPY ci/samples .
 
 FROM install_devel AS install_build

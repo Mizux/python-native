@@ -18,6 +18,18 @@ Github-CI:
 [github_aarch64_docker_link]: https://github.com/Mizux/python-native/actions/workflows/aarch64_docker.yml
 
 # Introduction
+<nav for="project"> |
+<a href="#requirement">Requirement</a> |
+<a href="#codemap">Codemap</a> |
+<a href="#dependencies">Dependencies</a> |
+<a href="#build-process">Build</a> |
+<a href="ci/README.md">CI</a> |
+<a href="#appendices">Appendices</a> |
+<a href="#misc">Misc</a> |
+<a href="#license">License</a> |
+</nav>
+
+This is an example of how to create a Modern [CMake](https://cmake.org/) C++/Python Project.
 
 This project aim to explain how you build a Python 3.6+ native wheel package using
  [`Python3`](https://www.python.org/doc/) and a [setup.py](https://setuptools.readthedocs.io/en/latest/userguide/quickstart.html).<br>
@@ -26,47 +38,67 @@ Python wrapper on it thanks to SWIG.<br>
 Then you want to provide a cross-platform Python packages to consume it in a
 Python project...
 
-## Table of Content
-
-* [Requirement](#requirement)
-* [Directory Layout](#directory-layout)
-* [Build Process](#build-process)
-  * [Local Package](#local-package)
-  * [Building a native Package](#building-local-native-package)
-* [Appendices](#appendices)
-  * [Resources](#resources)
-* [Misc](#misc)
+This project should run on GNU/Linux, MacOS and Windows.
 
 ## Requirement
+You'll need:
 
-You'll need "Python >= 3.6" and few python modules ("wheel" and "absl-py").
+* "CMake >= 3.16".
+* "Python >= 3.6" and few python modules ("setuptools" and "wheel").
 
-## Directory Layout
-
+## Codemap
 The project layout is as follow:
 
 * [CMakeLists.txt](CMakeLists.txt) Top-level for [CMake](https://cmake.org/cmake/help/latest/) based build.
 * [cmake](cmake) Subsidiary CMake files.
   * [python.cmake](cmake/python.cmake) All internall Python CMake stuff.
 
+* [ci](ci) Root directory for continuous integration.
+
 * [Foo](Foo) Root directory for `Foo` library.
   * [CMakeLists.txt](Foo/CMakeLists.txt) for `Foo`.
   * [include](Foo/include) public folder.
     * [foo](Foo/include/foo)
       * [Foo.hpp](Foo/include/foo/Foo.hpp)
-  * [python](Foo/python)
-    * [CMakeLists.txt](Foo/python/CMakeLists.txt) for `Foo` Python.
-    * [foo.i](Foo/python/foo.i) SWIG .Net wrapper.
   * [src](Foo/src) private folder.
     * [src/Foo.cpp](Foo/src/Foo.cpp)
+  * [python](Foo/python)
+    * [CMakeLists.txt](Foo/python/CMakeLists.txt) for `Foo` Python.
+    * [foo.i](Foo/python/foo.i) SWIG Python wrapper.
+* [Bar](Bar) Root directory for `Bar` library.
+  * [CMakeLists.txt](Bar/CMakeLists.txt) for `Bar`.
+  * [include](Bar/include) public folder.
+    * [bar](Bar/include/bar)
+      * [Bar.hpp](Bar/include/bar/Bar.hpp)
+  * [src](Bar/src) private folder.
+    * [src/Bar.cpp](Bar/src/Bar.cpp)
+  * [python](Bar/python)
+    * [CMakeLists.txt](Bar/python/CMakeLists.txt) for `Bar` Python.
+    * [bar.i](Bar/python/foo.i) SWIG Python wrapper.
+* [FooBar](FooBar) Root directory for `FooBar` library.
+  * [CMakeLists.txt](FooBar/CMakeLists.txt) for `FooBar`.
+  * [include](FooBar/include) public folder.
+    * [foobar](FooBar/include/foobar)
+      * [FooBar.hpp](FooBar/include/foobar/FooBar.hpp)
+  * [src](FooBar/src) private folder.
+    * [src/FooBar.cpp](FooBar/src/FooBar.cpp)
+  * [python](FooBar/python)
+    * [CMakeLists.txt](FooBar/python/CMakeLists.txt) for `FooBar` Python.
+    * [foobar.i](FooBar/python/foobar.i) SWIG Python wrapper.
 
 * [python](python) Root directory for Python template files
   * [`setup.py.in`](python/setup.py.in) setup.py template for the Python native package.
 
-* [ci](ci) Root directory for continuous integration.
+## Dependencies
+To complexify a little, the CMake project is composed of three libraries (Foo, Bar and FooBar)
+with the following dependencies:  
+```sh
+Foo:
+Bar:
+FooBar: PUBLIC Foo PRIVATE Bar
+```
 
 ## Build Process
-
 To Create a native dependent package which will contains two parts:
 * A bunch of native libraries for the supported platform targeted.
 * The Python code depending on it.
@@ -74,13 +106,11 @@ To Create a native dependent package which will contains two parts:
 note: Since [Pypi.org](pypi.org) support multiple packages, we will simply upload one package per supported platform.
 
 ### Local Package
-
 The pipeline for `linux-x86-64` should be as follow:<br>
 ![Local Pipeline](docs/pipeline.svg)
 ![Legend](docs/legend.svg)
 
 #### Building local native Package
-
 Thus we have the C++ shared library `libFoo.so` and the SWIG generated
 Python wrappers e.g. `pyfoo.py` in the same package.
 
@@ -113,16 +143,13 @@ tips: since wheel package are just zip archive you can use `unzip -l <package>.w
 to study their layout.
 
 ## Appendices
-
 Few links on the subject...
 
 ### Resources
-
 * [Packaging Python Project](https://packaging.python.org/tutorials/packaging-projects/)
 * [PEP 600  Future 'manylinux' Platform Tags](https://www.python.org/dev/peps/pep-0600/)
 
 ## Misc
-
 Image has been generated using [plantuml](http://plantuml.com/):
 ```bash
 plantuml -Tsvg docs/{file}.dot
@@ -130,11 +157,9 @@ plantuml -Tsvg docs/{file}.dot
 So you can find the dot source files in [docs](docs).
 
 ## License
-
 Apache 2. See the LICENSE file for details.
 
 ## Disclaimer
-
 This is not an official Google product, it is just code that happens to be
 owned by Google.
 

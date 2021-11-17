@@ -9,7 +9,7 @@
 ci/Makefile
 #ci/docker
 **/Dockerfile
-ci/doc
+ci/docs
 ci/cache
 ci/export
 

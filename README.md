@@ -1,8 +1,21 @@
-[![Linux](https://github.com/Mizux/python-native/actions/workflows/linux.yml/badge.svg)](https://github.com/Mizux/python-native/actions/workflows/linux.yml)
-[![MacOS](https://github.com/Mizux/python-native/actions/workflows/macos.yml/badge.svg)](https://github.com/Mizux/python-native/actions/workflows/macos.yml)
-[![Windows](https://github.com/Mizux/python-native/actions/workflows/win.yml/badge.svg)](https://github.com/Mizux/python-native/actions/workflows/win.yml)<br>
-[![Docker Linux x86-64](https://github.com/Mizux/python-native/actions/workflows/docker_amd64.yml/badge.svg)](https://github.com/Mizux/python-native/actions/workflows/docker_amd64.yml)
-[![Docker ARMv8 64-bit](https://github.com/Mizux/python-native/actions/workflows/docker_arm64v8.yml/badge.svg)](https://github.com/Mizux/python-native/actions/workflows/docker_arm64v8.yml)
+Github-CI:
+[![Build Status][github_linux_status]][github_linux_link]
+[![Build Status][github_macos_status]][github_macos_link]
+[![Build Status][github_windows_status]][github_windows_link]
+[![Build Status][github_amd64_docker_status]][github_amd64_docker_link]
+[![Build Status][github_aarch64_docker_status]][github_aarch64_docker_link]
+
+
+[github_linux_status]: https://github.com/Mizux/python-native/actions/workflows/linux.yml/badge.svg
+[github_linux_link]: https://github.com/Mizux/python-native/actions/workflows/linux.yml
+[github_macos_status]: https://github.com/Mizux/python-native/actions/workflows/macos.yml/badge.svg
+[github_macos_link]: https://github.com/Mizux/python-native/actions/workflows/macos.yml
+[github_windows_status]: https://github.com/Mizux/python-native/actions/workflows/windows.yml/badge.svg
+[github_windows_link]: https://github.com/Mizux/python-native/actions/workflows/windows.yml
+[github_amd64_docker_status]: https://github.com/Mizux/python-native/actions/workflows/amd64_docker.yml/badge.svg
+[github_amd64_docker_link]: https://github.com/Mizux/python-native/actions/workflows/amd64_docker.yml
+[github_aarch64_docker_status]: https://github.com/Mizux/python-native/actions/workflows/aarch64_docker.yml/badge.svg
+[github_aarch64_docker_link]: https://github.com/Mizux/python-native/actions/workflows/aarch64_docker.yml
 
 # Introduction
 

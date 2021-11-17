@@ -36,8 +36,6 @@ jobs:
         rm -rf swig-4.0.2;
     - name: Check swig
       run: swig -version
-    - name: Check mvn
-      run: mvn --version
     - name: Configure
       run: cmake -S. -Bbuild -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
     - name: Build
@@ -73,8 +71,6 @@ jobs:
         rm -rf swig-4.0.2;
     - name: Check swig
       run: swig -version
-    - name: Check mvn
-      run: mvn --version
     - name: Configure
       run: cmake -S. -Bbuild -G "Ninja Multi-Config" -DCMAKE_INSTALL_PREFIX=install
     - name: Build
@@ -106,8 +102,6 @@ jobs:
         rm -rf swig-4.0.2;
     - name: Check swig
       run: swig -version
-    - name: Check mvn
-      run: mvn --version
     - name: Configure
       run: cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
     - name: Build

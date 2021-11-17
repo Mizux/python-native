@@ -19,8 +19,6 @@ jobs:
       run: brew install swig
     - name: Check swig
       run: swig -version
-    - name: Check mvn
-      run: mvn --version
     - name: Configure
       run: cmake -S. -Bbuild -G "Xcode"
     - name: Build
@@ -39,8 +37,6 @@ jobs:
       run: brew install swig
     - name: Check swig
       run: swig -version
-    - name: Check mvn
-      run: mvn --version
     - name: Configure
       run: cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
     - name: Build

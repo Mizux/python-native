@@ -65,7 +65,9 @@ include(CTest)
 include(cpp)
 
 if(WIN32)
+  message(STATUS "Getting SWIG: ...")
   include(swig)
+  message(STATUS "Getting SWIG: ...DONE")
 endif()
 
 option(FETCH_PYTHON_DEPS "Install python required modules if not available" ON)
@@ -73,8 +75,9 @@ message(STATUS "Python fetch dependencies: ${FETCH_PYTHON_DEPS}")
 
 include(python)
 
+add_subdirectory(tests)
+
 option(BUILD_EXAMPLES "Build examples" ON)
 message(STATUS "Build examples: ${BUILD_EXAMPLES}")
-
-add_subdirectory(tests)
 add_subdirectory(examples)
+

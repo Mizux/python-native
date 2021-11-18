@@ -5,7 +5,6 @@ Github-CI:
 [![Build Status][github_amd64_docker_status]][github_amd64_docker_link]
 [![Build Status][github_aarch64_docker_status]][github_aarch64_docker_link]
 
-
 [github_linux_status]: https://github.com/Mizux/python-native/actions/workflows/linux.yml/badge.svg
 [github_linux_link]: https://github.com/Mizux/python-native/actions/workflows/linux.yml
 [github_macos_status]: https://github.com/Mizux/python-native/actions/workflows/macos.yml/badge.svg
@@ -25,7 +24,6 @@ Github-CI:
 <a href="#build-process">Build</a> |
 <a href="ci/README.md">CI</a> |
 <a href="#appendices">Appendices</a> |
-<a href="#misc">Misc</a> |
 <a href="#license">License</a> |
 </nav>
 
@@ -127,11 +125,11 @@ If everything good the package (located in `<buildir>/python/dist`) should have
 this layout:
 ```
 {...}/dist/pythonnative-X.Y.9999-cp3Z-cp3Z-<platform>.whl:
-\- ortools
+\- pythonnative
    \- __init__.py
    \- .libs
       \- libFoo.so
-   \- Foo
+   \- foo
       \- __init__.py
       \- pyFoo.py
       \- _pyFoo.so
@@ -146,10 +144,17 @@ to study their layout.
 Few links on the subject...
 
 ### Resources
+Project layout:
+* The Pitchfork Layout Revision 1 (cxx-pflR1)
+CMake:
+* https://llvm.org/docs/CMakePrimer.html
+* https://cliutils.gitlab.io/modern-cmake/
+* https://cgold.readthedocs.io/en/latest/
+Python:
 * [Packaging Python Project](https://packaging.python.org/tutorials/packaging-projects/)
 * [PEP 600  Future 'manylinux' Platform Tags](https://www.python.org/dev/peps/pep-0600/)
 
-## Misc
+### Misc
 Image has been generated using [plantuml](http://plantuml.com/):
 ```bash
 plantuml -Tsvg docs/{file}.dot

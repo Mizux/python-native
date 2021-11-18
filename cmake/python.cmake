@@ -193,7 +193,7 @@ add_custom_target(python_package ALL
 ###################
 if(BUILD_TESTING)
   search_python_module(NAME virtualenv PACKAGE virtualenv)
-  # venv not working on github runners
+  # venv not working on github windows runners
   # search_python_internal_module(NAME venv)
   # Testing using a vitual environment
   set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m virtualenv)

@@ -73,7 +73,7 @@ The project layout is as follow:
     * [src/Bar.cpp](Bar/src/Bar.cpp)
   * [python](Bar/python)
     * [CMakeLists.txt](Bar/python/CMakeLists.txt) for `Bar` Python.
-    * [bar.i](Bar/python/foo.i) SWIG Python wrapper.
+    * [bar.i](Bar/python/bar.i) SWIG Python wrapper.
 * [FooBar](FooBar) Root directory for `FooBar` library.
   * [CMakeLists.txt](FooBar/CMakeLists.txt) for `FooBar`.
   * [include](FooBar/include) public folder.
@@ -130,6 +130,7 @@ this layout:
    \- __init__.py
    \- .libs
       \- libFoo.so
+      \- ...
    \- foo
       \- __init__.py
       \- pyFoo.py

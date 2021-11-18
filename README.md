@@ -41,8 +41,9 @@ This project should run on GNU/Linux, MacOS and Windows.
 ## Requirement
 You'll need:
 
-* "CMake >= 3.16".
-* "Python >= 3.6" and few python modules ("setuptools" and "wheel").
+* "CMake >= 3.18".
+* "Python >= 3.6" and python module 'pip' (ed "setuptools" and "wheel" will be
+ auto installed on demand).
 
 ## Codemap
 The project layout is as follow:

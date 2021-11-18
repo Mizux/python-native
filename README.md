@@ -146,10 +146,12 @@ Few links on the subject...
 ### Resources
 Project layout:
 * The Pitchfork Layout Revision 1 (cxx-pflR1)
+
 CMake:
 * https://llvm.org/docs/CMakePrimer.html
 * https://cliutils.gitlab.io/modern-cmake/
 * https://cgold.readthedocs.io/en/latest/
+
 Python:
 * [Packaging Python Project](https://packaging.python.org/tutorials/packaging-projects/)
 * [PEP 600  Future 'manylinux' Platform Tags](https://www.python.org/dev/peps/pep-0600/)

@@ -106,7 +106,7 @@ set(PYTHON_PROJECT pythonnative)
 message(STATUS "Python project: ${PYTHON_PROJECT}")
 
 # Swig wrap all libraries
-foreach(SUBPROJECT IN ITEMS Foo)
+foreach(SUBPROJECT IN ITEMS Foo Bar FooBar)
   add_subdirectory(${SUBPROJECT}/python)
 endforeach()
 
@@ -119,6 +119,8 @@ message(STATUS "Python project build path: ${PYTHON_PROJECT_PATH}")
 #file(MAKE_DIRECTORY python/${PYTHON_PROJECT})
 file(GENERATE OUTPUT ${PYTHON_PROJECT_PATH}/__init__.py CONTENT "__version__ = \"${PROJECT_VERSION}\"\n")
 file(GENERATE OUTPUT ${PYTHON_PROJECT_PATH}/foo/__init__.py CONTENT "")
+file(GENERATE OUTPUT ${PYTHON_PROJECT_PATH}/bar/__init__.py CONTENT "")
+file(GENERATE OUTPUT ${PYTHON_PROJECT_PATH}/foobar/__init__.py CONTENT "")
 
 # setup.py.in contains cmake variable e.g. @PYTHON_PROJECT@ and
 # generator expression e.g. $<TARGET_FILE_NAME:pyFoo>
@@ -152,7 +154,15 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E $<IF:$<STREQUAL:$<TARGET_PROPERTY:Foo,TYPE>,SHARED_LIBRARY>,copy,true>
   $<$<STREQUAL:$<TARGET_PROPERTY:Foo,TYPE>,SHARED_LIBRARY>:$<TARGET_SONAME_FILE:Foo>>
   ${PYTHON_PROJECT}/.libs
+  COMMAND ${CMAKE_COMMAND} -E $<IF:$<STREQUAL:$<TARGET_PROPERTY:Bar,TYPE>,SHARED_LIBRARY>,copy,true>
+  $<$<STREQUAL:$<TARGET_PROPERTY:Bar,TYPE>,SHARED_LIBRARY>:$<TARGET_SONAME_FILE:Bar>>
+  ${PYTHON_PROJECT}/.libs
+  COMMAND ${CMAKE_COMMAND} -E $<IF:$<STREQUAL:$<TARGET_PROPERTY:FooBar,TYPE>,SHARED_LIBRARY>,copy,true>
+  $<$<STREQUAL:$<TARGET_PROPERTY:FooBar,TYPE>,SHARED_LIBRARY>:$<TARGET_SONAME_FILE:FooBar>>
+  ${PYTHON_PROJECT}/.libs
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFoo> ${PYTHON_PROJECT}/foo
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyBar> ${PYTHON_PROJECT}/bar
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFooBar> ${PYTHON_PROJECT}/foobar
   #COMMAND ${Python3_EXECUTABLE} setup.py bdist_egg bdist_wheel
   COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel
   COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/python/dist/timestamp
@@ -162,6 +172,8 @@ add_custom_command(
     python/setup.py
     ${PROJECT_NAMESPACE}::Foo
     ${PROJECT_NAMESPACE}::pyFoo
+    ${PROJECT_NAMESPACE}::pyBar
+    ${PROJECT_NAMESPACE}::pyFooBar
   BYPRODUCTS
     python/${PYTHON_PROJECT}
     python/${PYTHON_PROJECT}.egg-info

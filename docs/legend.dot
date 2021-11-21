@@ -18,13 +18,13 @@ digraph Legend {
     LIB -> LIB_LGD [arrowhead=none, style=invisible];
 
     # Python Stuff
-    PYTHON [label="pywrapfoo.py", shape=note, fillcolor=gold];
+    PYTHON [label="pyfoo.py", shape=note, fillcolor=gold];
     PYTHON_LGD [label=": Python source file", color=none];
     PYTHON -> PYTHON_LGD [arrowhead=none, style=invisible];
-    PYWRP [label="_pywrapfoo.so", shape=component, fillcolor=gold];
+    PYWRP [label="_pyfoo.so", shape=component, fillcolor=gold];
     PYWRP_LGD [label=": C++ wrapper output (i.e. binary)", color=none];
     PYWRP -> PYWRP_LGD [arrowhead=none, style=invisible];
-    WHL [label="foo-<version>-cp3*-cp3*-<platform>.whl", shape=folder, fillcolor=gold];
+    WHL [label="pythonnative-<version>-cp3*-cp3*-<platform>.whl", shape=folder, fillcolor=gold];
     WHL_LGD [label=": Python package file (i.e. wheel archive)", color=none];
     WHL -> WHL_LGD [arrowhead=none, style=invisible];
 

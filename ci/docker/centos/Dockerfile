@@ -2,7 +2,6 @@
 # ref: https://hub.docker.com/_/centos
 FROM centos:latest AS env
 LABEL maintainer="mizux.dev@gmail.com"
-
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
 RUN dnf -y update \
@@ -16,7 +15,7 @@ RUN dnf -y update \
 && dnf -y install pcre-devel \
 && dnf clean all \
 && rm -rf /var/cache/dnf \
-&& wget "https://downloads.sourceforge.net/project/swig/swig/swig-4.0.2/swig-4.0.2.tar.gz" \
+&& wget -q "https://downloads.sourceforge.net/project/swig/swig/swig-4.0.2/swig-4.0.2.tar.gz" \
 && tar xvf swig-4.0.2.tar.gz \
 && rm swig-4.0.2.tar.gz \
 && cd swig-4.0.2 \

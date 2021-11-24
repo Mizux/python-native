@@ -99,6 +99,7 @@ FooBar: PUBLIC Foo PRIVATE Bar
 
 ## Build Process
 To Create a native dependent package which will contains two parts:
+
 * A bunch of native libraries for the supported platform targeted.
 * The Python code depending on it.
 

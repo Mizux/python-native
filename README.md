@@ -39,6 +39,7 @@ Python project...
 This project should run on GNU/Linux, MacOS and Windows.
 
 ## Requirement
+
 You'll need:
 
 * "CMake >= 3.18".
@@ -46,6 +47,7 @@ You'll need:
  auto installed on demand).
 
 ## Codemap
+
 The project layout is as follow:
 
 * [CMakeLists.txt](CMakeLists.txt) Top-level for [CMake](https://cmake.org/cmake/help/latest/) based build.
@@ -98,6 +100,7 @@ FooBar: PUBLIC Foo PRIVATE Bar
 ```
 
 ## Build Process
+
 To Create a native dependent package which will contains two parts:
 
 * A bunch of native libraries for the supported platform targeted.
@@ -144,6 +147,7 @@ tips: since wheel package are just zip archive you can use `unzip -l <package>.w
 to study their layout.
 
 ## Appendices
+
 Few links on the subject...
 
 ### Resources
@@ -167,9 +171,10 @@ plantuml -Tsvg docs/{file}.dot
 So you can find the dot source files in [docs](docs).
 
 ## License
+
 Apache 2. See the LICENSE file for details.
 
 ## Disclaimer
+
 This is not an official Google product, it is just code that happens to be
 owned by Google.
-

@@ -24,10 +24,11 @@ RUN yum -y update \
 && yum -y install pcre-devel \
 && yum clean all \
 && rm -rf /var/cache/yum \
-&& wget --no-check-certificate "https://downloads.sourceforge.net/project/swig/swig/swig-4.0.2/swig-4.0.2.tar.gz" \
+&& wget -q "https://github.com/swig/swig/archive/refs/tags/v4.0.2.tar.gz" -O swig-4.0.2.tar.gz \
 && tar xvf swig-4.0.2.tar.gz \
 && rm swig-4.0.2.tar.gz \
 && cd swig-4.0.2 \
+&& ./autogen.sh \
 && ./configure --prefix=/usr \
 && make -j 4 \
 && make install \

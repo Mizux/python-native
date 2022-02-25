@@ -1,5 +1,5 @@
 # Create a virtual environment with all tools installed
-# ref: https://hub.docker.com/_/centos
+# ref: https://quay.io/repository/centos/centos
 FROM quay.io/centos/centos:stream AS env
 LABEL maintainer="mizux.dev@gmail.com"
 # Install system build dependencies

@@ -1,7 +1,7 @@
 set_property(SOURCE foobar.i PROPERTY CPLUSPLUS ON)
 set_property(SOURCE foobar.i PROPERTY SWIG_MODULE_NAME pyFooBar)
 swig_add_library(pyFooBar
-  TYPE SHARED
+  TYPE MODULE
   LANGUAGE python
   OUTPUT_DIR ${CMAKE_BINARY_DIR}/python/${PYTHON_PROJECT}/foobar
   SOURCES foobar.i)

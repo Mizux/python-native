@@ -11,7 +11,11 @@ if(${SWIG_VERSION} VERSION_GREATER_EQUAL 4)
 endif()
 
 if(UNIX AND NOT APPLE)
-  list(APPEND CMAKE_SWIG_FLAGS "-DSWIGWORDSIZE64")
+  if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    list(APPEND CMAKE_SWIG_FLAGS "-DSWIGWORDSIZE64")
+  else()
+    list(APPEND CMAKE_SWIG_FLAGS "-DSWIGWORDSIZE32")
+  endif()
 endif()
 
 # Find Python 3
@@ -102,6 +106,48 @@ function(search_python_internal_module)
   endif()
 endfunction()
 
+###################
+##  Python Test  ##
+###################
+if(BUILD_TESTING)
+  search_python_module(NAME virtualenv PACKAGE virtualenv)
+  # venv not working on github windows runners
+  # search_python_internal_module(NAME venv)
+  # Testing using a vitual environment
+  set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m virtualenv)
+  #set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m venv)
+  set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/python/venv)
+  if(WIN32)
+    set(VENV_Python3_EXECUTABLE ${VENV_DIR}/Scripts/python.exe)
+  else()
+    set(VENV_Python3_EXECUTABLE ${VENV_DIR}/bin/python)
+  endif()
+endif()
+
+if(BUILD_TESTING)
+  # add_python_test()
+  # CMake function to generate and build python test.
+  # Parameters:
+  #  the python filename
+  # e.g.:
+  # add_python_test(foo.py)
+  function(add_python_test FILE_NAME)
+    message(STATUS "Configuring test ${FILE_NAME} ...")
+    get_filename_component(TEST_NAME ${FILE_NAME} NAME_WE)
+
+    add_test(
+      NAME python_test_${TEST_NAME}
+      COMMAND ${VENV_Python3_EXECUTABLE} -m pytest ${FILE_NAME}
+      WORKING_DIRECTORY ${VENV_DIR})
+    message(STATUS "Configuring test ${FILE_NAME} done")
+  endfunction()
+endif()
+
+#######################
+##  PYTHON WRAPPERS  ##
+#######################
+list(APPEND CMAKE_SWIG_FLAGS "-I${PROJECT_SOURCE_DIR}")
+
 set(PYTHON_PROJECT pythonnative)
 message(STATUS "Python project: ${PYTHON_PROJECT}")
 set(PYTHON_PROJECT_DIR ${PROJECT_BINARY_DIR}/python/${PYTHON_PROJECT})
@@ -117,6 +163,7 @@ endforeach()
 #######################
 #file(MAKE_DIRECTORY python/${PYTHON_PROJECT})
 file(GENERATE OUTPUT ${PYTHON_PROJECT_DIR}/__init__.py CONTENT "__version__ = \"${PROJECT_VERSION}\"\n")
+
 file(GENERATE OUTPUT ${PYTHON_PROJECT_DIR}/foo/__init__.py CONTENT "")
 file(GENERATE OUTPUT ${PYTHON_PROJECT_DIR}/bar/__init__.py CONTENT "")
 file(GENERATE OUTPUT ${PYTHON_PROJECT_DIR}/foobar/__init__.py CONTENT "")
@@ -187,56 +234,30 @@ add_custom_target(python_package ALL
     python/dist/timestamp
   WORKING_DIRECTORY python)
 
-###################
-##  Python Test  ##
-###################
 if(BUILD_TESTING)
-  search_python_module(NAME virtualenv PACKAGE virtualenv)
-  # venv not working on github windows runners
-  # search_python_internal_module(NAME venv)
-  # Testing using a vitual environment
-  set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m virtualenv)
-  #set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m venv)
-  set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/python/venv)
-  if(WIN32)
-    set(VENV_Python3_EXECUTABLE ${VENV_DIR}/Scripts/python.exe)
-  else()
-    set(VENV_Python3_EXECUTABLE ${VENV_DIR}/bin/python)
-  endif()
   # make a virtualenv to install our python package in it
   add_custom_command(TARGET python_package POST_BUILD
     # Clean previous install otherwise pip install may do nothing
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${VENV_DIR}
-    COMMAND ${VENV_EXECUTABLE} -p ${Python3_EXECUTABLE} ${VENV_DIR}
+    COMMAND ${VENV_EXECUTABLE} -p ${Python3_EXECUTABLE}
+    $<IF:$<BOOL:${VENV_USE_SYSTEM_SITE_PACKAGES}>,--system-site-packages,-q>
+      ${VENV_DIR}
     #COMMAND ${VENV_EXECUTABLE} ${VENV_DIR}
     # Must NOT call it in a folder containing the setup.py otherwise pip call it
     # (i.e. "python setup.py bdist") while we want to consume the wheel package
-    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install --find-links=${CMAKE_CURRENT_BINARY_DIR}/python/dist ${PYTHON_PROJECT}
+    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install
+      --find-links=${CMAKE_CURRENT_BINARY_DIR}/python/dist ${PYTHON_PROJECT}==${PROJECT_VERSION}
+    # install modules only required to run examples
+    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install pytest
     BYPRODUCTS ${VENV_DIR}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Create venv and install ${PYTHON_PROJECT}"
     VERBATIM)
 endif()
 
-# add_python_test()
-# CMake function to generate and build python test.
-# Parameters:
-#  the python filename
-# e.g.:
-# add_python_test(foo.py)
-function(add_python_test FILE_NAME)
-  message(STATUS "Configuring test ${FILE_NAME} ...")
-  get_filename_component(EXAMPLE_NAME ${FILE_NAME} NAME_WE)
-
-  if(BUILD_TESTING)
-    add_test(
-      NAME python_test_${EXAMPLE_NAME}
-      COMMAND ${VENV_Python3_EXECUTABLE} ${FILE_NAME}
-      WORKING_DIRECTORY ${VENV_DIR})
-  endif()
-  message(STATUS "Configuring test ${FILE_NAME} done")
-endfunction()
-
+######################
+##  Python Example  ##
+######################
 # add_python_example()
 # CMake function to generate and build python example.
 # Parameters:

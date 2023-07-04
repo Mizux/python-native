@@ -3,7 +3,6 @@
 # Create a virtual environment with all tools installed
 # ref: https://github.com/pypa/manylinux
 FROM quay.io/pypa/manylinux2014_aarch64:latest AS env
-LABEL maintainer="mizux.dev@gmail.com"
 
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH

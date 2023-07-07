@@ -10,25 +10,32 @@ RUN dnf -y update \
 && dnf clean all \
 && rm -rf /var/cache/dnf
 
-# Install SWIG 4.0.2
+# Install system build dependencies
 RUN dnf -y update \
-&& dnf -y install pcre-devel \
+&& dnf -y install gcc-toolset-11 \
+&& dnf clean all \
+&& rm -rf /var/cache/dnf
+RUN echo "source /opt/rh/gcc-toolset-11/enable" >> /etc/bashrc
+SHELL ["/bin/bash", "--login", "-c"]
+
+# Install SWIG 4.1.1
+RUN dnf -y update \
+&& dnf -y install pcre2-devel \
 && dnf clean all \
 && rm -rf /var/cache/dnf \
-&& wget -q "https://github.com/swig/swig/archive/refs/tags/v4.0.2.tar.gz" -O swig-4.0.2.tar.gz \
-&& tar xvf swig-4.0.2.tar.gz \
-&& rm swig-4.0.2.tar.gz \
-&& cd swig-4.0.2 \
-&& ./autogen.sh \
+&& wget -q "https://downloads.sourceforge.net/project/swig/swig/swig-4.1.1/swig-4.1.1.tar.gz" \
+&& tar xvf swig-4.1.1.tar.gz \
+&& rm -f swig-4.1.1.tar.gz \
+&& cd swig-4.1.1 \
 && ./configure --prefix=/usr \
 && make -j 4 \
 && make install \
 && cd .. \
-&& rm -rf swig-4.0.2
+&& rm -rf swig-4.1.1
 
 # Install Python
 RUN dnf -y update \
-&& dnf -y install python39-devel \
+&& dnf -y install python3.11-devel python3.11-pip \
 && dnf clean all \
 && rm -rf /var/cache/dnf
 

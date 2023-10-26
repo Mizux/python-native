@@ -10,7 +10,7 @@ RUN apk add --no-cache git build-base linux-headers cmake
 RUN apk add --no-cache swig
 
 # Install Python
-RUN apk add --no-cache python3-dev py3-pip
+RUN apk add --no-cache python3-dev py3-pip py3-wheel
 
 # Add the library src to our build env
 FROM env AS devel
@@ -29,7 +29,8 @@ RUN cmake --build build --target test -v
 # Test install rules
 FROM env AS install_env
 COPY --from=build /home/project/build/python/dist/*.whl ./
-RUN python3 -m pip install --find-links=. \
+RUN python3 -m pip install --break-system-packages \
+ --find-links=. \
  pythonnative*.whl
 
 FROM install_env AS install_devel

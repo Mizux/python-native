@@ -243,7 +243,7 @@ if(BUILD_TESTING)
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${VENV_DIR}
     #COMMAND ${VENV_EXECUTABLE} -p ${Python3_EXECUTABLE}
     COMMAND ${VENV_EXECUTABLE}
-      $<IF:$<BOOL:${VENV_USE_SYSTEM_SITE_PACKAGES}>,--system-site-packages,>
+      $<$<BOOL:${VENV_USE_SYSTEM_SITE_PACKAGES}>:--system-site-packages>
       ${VENV_DIR}
     #COMMAND ${VENV_EXECUTABLE} ${VENV_DIR}
     # Must NOT call it in a folder containing the setup.py otherwise pip call it

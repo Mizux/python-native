@@ -7,24 +7,32 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   native:
     strategy:
-       matrix:
-         cmake: [
-           {generator: "Unix Makefiles", config: "Release"},
-           {generator: "Ninja", config: "Release"},
-           {generator: "Ninja Multi-Config", config: "Release"},
-         ]
-         python: [
-           {version: "3.9"},
-           {version: "3.10"},
-           {version: "3.11"},
-           {version: "3.12"},
-           {version: "3.13"},
-         ]
-       fail-fast: false
-    name: Linux•${{ matrix.cmake.generator }}•Py${{ matrix.python.version }}
+      matrix:
+        cmake: [
+          {name: "Make", generator: "Unix Makefiles", config: "Release"},
+          {name: "Ninja", generator: "Ninja", config: "Release"},
+          {name: "NinjaMulti", generator: "Ninja Multi-Config", config: "Release"},
+        ]
+        python: [
+          {version: "3.9"},
+          {version: "3.10"},
+          {version: "3.11"},
+          {version: "3.12"},
+          {version: "3.13"},
+        ]
+      fail-fast: false
+    name: Linux•${{ matrix.cmake.name }}•Py${{ matrix.python.version }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python.version }}
+      - name: Check Python
+        run: python --version
+      - name: Update Path
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Install Ninja
         run: |
           sudo apt-get update
@@ -33,12 +41,6 @@ jobs:
         run: |
           sudo apt install -y swig
           swig -version
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python.version }}
-      - name: Update Path
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Check cmake
         run: cmake --version
       - name: Configure

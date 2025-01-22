@@ -33,7 +33,7 @@ help:
 	@echo -e "\t\t${BOLD}opensuse${RESET} (tumbleweed)"
 	@echo -e "\t\t${BOLD}rockylinux${RESET} (9)"
 	@echo -e "\t\t${BOLD}ubuntu${RESET} (rolling)"
-	@echo -e "\t\t${BOLD}all${RESET}: trigger ALL DISTROS."
+	@echo -e "\t\t${BOLD}all${RESET} trigger ALL DISTROS."
 	@echo
 	@echo -e "\tWith ${BOLD}<stage>${RESET}:"
 	@echo -e "\t\t${BOLD}env${RESET}"

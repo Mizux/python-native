@@ -46,7 +46,7 @@ WORKDIR /home/samples
 COPY ci/samples .
 
 FROM install_devel AS install_build
-RUN python3 sample.py
+RUN python3 -m compileall .
 
 FROM install_build AS install_test
 RUN python3 sample.py

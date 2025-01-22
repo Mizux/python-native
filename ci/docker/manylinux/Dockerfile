@@ -31,14 +31,15 @@ RUN ./build-manylinux.sh test
 
 FROM env AS install_env
 COPY --from=build /home/project/build*/python/dist/*.whl ./
-RUN python3 -m pip install --find-links=. pythonnative*.whl
+RUN python3 -m pip install --find-links=. \
+ pythonnative*.whl
 
 FROM install_env AS install_devel
 WORKDIR /home/sample
 COPY ci/samples .
 
 FROM install_devel AS install_build
-RUN python3 sample.py
+RUN python3 -m compileall .
 
 FROM install_build AS install_test
 RUN python3 sample.py

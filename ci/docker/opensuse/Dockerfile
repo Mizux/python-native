@@ -18,6 +18,7 @@ RUN zypper update -y \
 RUN zypper update -y \
 && zypper install -y python311 python311-devel \
  python311-pip python311-wheel python311-setuptools \
+ python3-numpy python3-pandas \
 && zypper clean -a
 RUN python3.11 -m pip install --break-system-packages \
  mypy
@@ -48,7 +49,7 @@ WORKDIR /home/samples
 COPY ci/samples .
 
 FROM install_devel AS install_build
-RUN python3 sample.py
+RUN python3 -m compileall .
 
 FROM install_build AS install_test
 RUN python3 sample.py

@@ -1,20 +1,26 @@
 Github-CI:<br>
-[![Build Status][github_linux_status]][github_linux_link]
-[![Build Status][github_macos_status]][github_macos_link]
-[![Build Status][github_windows_status]][github_windows_link]<br>
+[![Build Status][github_amd64_linux_status]][github_amd64_linux_link]
+[![Build Status][github_amd64_macos_status]][github_amd64_macos_link]
+[![Build Status][github_arm64_macos_status]][github_arm64_macos_link]
+[![Build Status][github_amd64_windows_status]][github_amd64_windows_link]<br>
 [![Build Status][github_amd64_docker_status]][github_amd64_docker_link]
-[![Build Status][github_aarch64_docker_status]][github_aarch64_docker_link]
+[![Build Status][github_arm64_docker_status]][github_arm64_docker_link]
+[![Build Status][github_riscv64_docker_status]][github_riscv64_docker_link]
 
-[github_linux_status]: https://github.com/Mizux/python-native/actions/workflows/amd64_linux.yml/badge.svg
-[github_linux_link]: https://github.com/Mizux/python-native/actions/workflows/amd64_linux.yml
-[github_macos_status]: https://github.com/Mizux/python-native/actions/workflows/amd64_macos.yml/badge.svg
-[github_macos_link]: https://github.com/Mizux/python-native/actions/workflows/amd64_macos.yml
-[github_windows_status]: https://github.com/Mizux/python-native/actions/workflows/amd64_windows.yml/badge.svg
-[github_windows_link]: https://github.com/Mizux/python-native/actions/workflows/amd64_windows.yml
-[github_amd64_docker_status]: https://github.com/Mizux/python-native/actions/workflows/amd64_docker.yml/badge.svg
-[github_amd64_docker_link]: https://github.com/Mizux/python-native/actions/workflows/amd64_docker.yml
-[github_aarch64_docker_status]: https://github.com/Mizux/python-native/actions/workflows/aarch64_docker.yml/badge.svg
-[github_aarch64_docker_link]: https://github.com/Mizux/python-native/actions/workflows/aarch64_docker.yml
+[github_amd64_linux_status]: ./../../actions/workflows/amd64_linux.yml/badge.svg
+[github_amd64_linux_link]: ./../../actions/workflows/amd64_linux.yml
+[github_amd64_macos_status]: ./../../actions/workflows/amd64_macos.yml/badge.svg
+[github_amd64_macos_link]: ./../../actions/workflows/amd64_macos.yml
+[github_arm64_macos_status]: ./../../actions/workflows/arm64_macos.yml/badge.svg
+[github_arm64_macos_link]: ./../../actions/workflows/arm64_macos.yml
+[github_amd64_windows_status]: ./../../actions/workflows/amd64_windows.yml/badge.svg
+[github_amd64_windows_link]: ./../../actions/workflows/amd64_windows.yml
+[github_amd64_docker_status]: ./../../actions/workflows/amd64_docker.yml/badge.svg
+[github_amd64_docker_link]: ./../../actions/workflows/amd64_docker.yml
+[github_arm64_docker_status]: ./../../actions/workflows/arm64_docker.yml/badge.svg
+[github_arm64_docker_link]: ./../../actions/workflows/arm64_docker.yml
+[github_riscv64_docker_status]: ./../../actions/workflows/riscv64_docker.yml/badge.svg
+[github_riscv64_docker_link]: ./../../actions/workflows/riscv64_docker.yml
 
 # Introduction
 <nav for="project"> |

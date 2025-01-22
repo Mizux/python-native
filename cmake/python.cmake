@@ -10,7 +10,7 @@ if(${SWIG_VERSION} VERSION_GREATER_EQUAL 4)
   list(APPEND CMAKE_SWIG_FLAGS "-doxygen")
 endif()
 
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME STREQUAL "OpenBSD"))
   if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     list(APPEND CMAKE_SWIG_FLAGS "-DSWIGWORDSIZE64")
   else()
@@ -59,7 +59,7 @@ function(search_python_module)
       OUTPUT_VARIABLE MODULE_VERSION
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
-      )
+    )
   endif()
   if(${_RESULT} STREQUAL "0")
     message(STATUS "Found python module: \"${MODULE_NAME}\" (found version \"${MODULE_VERSION}\")")
@@ -69,7 +69,8 @@ function(search_python_module)
       execute_process(
         COMMAND ${Python3_EXECUTABLE} -m pip install --user ${MODULE_PACKAGE}
         OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
+        COMMAND_ERROR_IS_FATAL ANY
+      )
     else()
       message(FATAL_ERROR "Can't find python module: \"${MODULE_NAME}\", please install it using your system package manager.")
     endif()
@@ -113,11 +114,9 @@ if(BUILD_TESTING)
   #search_python_module(NAME virtualenv PACKAGE virtualenv)
   # venv not working on github windows runners
   search_python_internal_module(NAME venv)
-
   # Testing using a vitual environment
   #set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m virtualenv)
   set(VENV_EXECUTABLE ${Python3_EXECUTABLE} -m venv)
-
   set(VENV_DIR ${CMAKE_CURRENT_BINARY_DIR}/python/venv)
   if(WIN32)
     set(VENV_Python3_EXECUTABLE ${VENV_DIR}/Scripts/python.exe)
@@ -186,7 +185,7 @@ file(GENERATE
 #  COMMAND ${CMAKE_COMMAND} -E copy setup.py setup.py
 #  WORKING_DIRECTORY python)
 
-# Look for python module wheel
+# Look for python modules
 search_python_module(
   NAME setuptools
   PACKAGE setuptools)
@@ -195,7 +194,7 @@ search_python_module(
   PACKAGE wheel)
 
 add_custom_command(
-  OUTPUT python/dist/timestamp
+  OUTPUT python/dist_timestamp
   COMMAND ${CMAKE_COMMAND} -E remove_directory dist
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_PROJECT}/.libs
   # Don't need to copy static lib on Windows.
@@ -213,7 +212,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyFooBar> ${PYTHON_PROJECT}/foobar
   #COMMAND ${Python3_EXECUTABLE} setup.py bdist_egg bdist_wheel
   COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel
-  COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/python/dist/timestamp
+  COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/python/dist_timestamp
   MAIN_DEPENDENCY
     python/setup.py.in
   DEPENDS
@@ -233,7 +232,7 @@ add_custom_command(
 # Main Target
 add_custom_target(python_package ALL
   DEPENDS
-    python/dist/timestamp
+    python/dist_timestamp
   WORKING_DIRECTORY python)
 
 if(BUILD_TESTING)

@@ -19,13 +19,13 @@ WORKDIR /home/project
 COPY . .
 
 FROM devel AS build
-RUN cmake -version
+RUN cmake --version
 RUN cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build --target all -v
 RUN cmake --build build --target install -v
 
 FROM build AS test
-RUN cmake --build build --target test -v
+RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
 
 # Test install rules
 FROM env AS install_env

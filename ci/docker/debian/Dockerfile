@@ -5,7 +5,8 @@ FROM debian:unstable AS env
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
 RUN apt update -qq \
-&& apt install -yq git wget libssl-dev build-essential cmake \
+&& apt install -yq \
+ git wget libssl-dev build-essential cmake \
 && apt clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

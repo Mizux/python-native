@@ -9,6 +9,7 @@
 ci/Makefile
 #ci/docker
 **/Dockerfile
+**/Vagrantfile
 ci/docs
 ci/cache
 ci/export
@@ -18,7 +19,10 @@ CONTRIBUTING.md
 CONTRIBUTORS
 LICENSE
 README.md
-doc
+docs/
+tools/Makefile
+tools/export
+tools/**/*.Dockerfile
 
 # Native cmake build
 build/

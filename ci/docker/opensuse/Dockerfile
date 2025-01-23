@@ -16,8 +16,9 @@ RUN zypper update -y \
 
 # Install Python
 RUN zypper update -y \
-&& zypper install -y python311 python311-devel \
- python311-pip python311-wheel python311-setuptools \
+&& zypper install -y \
+ python311 python311-devel python311-pip \
+ python311-wheel python311-setuptools \
  python3-numpy python3-pandas \
 && zypper clean -a
 RUN python3.11 -m pip install --break-system-packages \

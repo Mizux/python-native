@@ -18,7 +18,8 @@ RUN dnf -y update \
 
 # Install Python
 RUN dnf -y update \
-&& dnf -y install python3 python3-devel python3-pip \
+&& dnf -y install \
+ python3 python3-devel python3-pip \
 && dnf clean all
 
 # Add the library src to our build env

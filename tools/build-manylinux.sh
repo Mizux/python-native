@@ -2,7 +2,7 @@
 
 # Build all the wheel artifacts for the platforms supported by manylinux2014 and
 # export them to the specified location.
-set -exo pipefail
+set -euxo pipefail
 
 function assert_defined(){
   if [[ -z "${!1}" ]]; then

@@ -10,8 +10,8 @@ RUN pacman -Syu --noconfirm git base-devel cmake
 RUN pacman -Syu --noconfirm swig
 
 # Install Python
-RUN pacman -Syu --noconfirm python python-pip \
- python-wheel python-setuptools
+RUN pacman -Syu --noconfirm \
+ python python-pip python-wheel python-setuptools
 
 # Add the library src to our build env
 FROM env AS devel

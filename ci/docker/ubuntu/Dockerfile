@@ -20,7 +20,8 @@ RUN apt update -q \
 # Install Python
 RUN apt update -q \
 && apt install -yq \
- python3-dev python3-pip python3-venv \
+ python3-dev python3-pip \
+ python3-venv python3-virtualenv \
  python3-setuptools python3-wheel \
  python3-numpy python3-pandas \
 && apt clean \

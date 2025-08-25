@@ -15,10 +15,10 @@ jobs:
           almalinux,
           alpine,
           debian,
-          #fedora, # timeout
-          #opensuse, # timeout
+          fedora,
+          opensuse,
           rockylinux,
-          #ubuntu, # Segmentation fault
+          ubuntu
         ]
       fail-fast: false
     name: arm64•${{matrix.distro}}

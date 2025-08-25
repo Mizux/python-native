@@ -81,7 +81,8 @@ Vagrant.configure("2") do |config|
   set -x
   pkg update -f
   pkg install -y git cmake swig
-  pkg install -y python39 py39-setuptools py39-wheel py39-pytest-virtualenv
+  pkg install -y swig python311 py311-pip py311-wheel py311-pytest-virtualenv
+  pkg install -y py311-numpy py311-pandas py311-matplotlib
   SHELL
 
   config.vm.provision "file", source: "../../../CMakeLists.txt", destination: "$HOME/project/"

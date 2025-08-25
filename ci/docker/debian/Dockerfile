@@ -45,7 +45,8 @@ RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
 # Test install rules
 FROM env AS install_env
 COPY --from=build /home/project/build/python/dist/*.whl ./
-RUN python3 -m pip install --break-system-packages \
+RUN python3 -m pip install \
+ --break-system-packages \
  --find-links=. \
  pythonnative*.whl
 

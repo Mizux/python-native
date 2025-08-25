@@ -17,11 +17,11 @@ RUN zypper update -y \
 # Install Python
 RUN zypper update -y \
 && zypper install -y \
- python311 python311-devel python311-pip \
- python311-wheel python311-setuptools \
+ python3 python3-devel python3-pip \
+ python3-wheel python3-setuptools python3-virtualenv \
  python3-numpy python3-pandas \
 && zypper clean -a
-RUN python3.11 -m pip install --break-system-packages \
+RUN python3 -m pip install --break-system-packages \
  mypy
 
 # Add the library src to our build env

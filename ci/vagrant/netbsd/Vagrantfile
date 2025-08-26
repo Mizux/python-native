@@ -86,8 +86,8 @@ Vagrant.configure("2") do |config|
   pkgin upgrade
   pkgin -y install git cmake
   pkgin -y install mozilla-rootcerts-openssl
-  pkgin -y install swig python311 py311-wheel py311-pip py311-pytest-virtualenv
-  pkgin -y install py311-numpy py311-pandas py311-matplotlib
+  pkgin -y install swig python312 py312-wheel py312-pip py312-pytest-virtualenv
+  pkgin -y install py312-numpy py312-pandas py312-matplotlib
   SHELL
 
   config.vm.provision "gcc14", type: "shell", inline:<<-SHELL

@@ -135,7 +135,6 @@ if(BUILD_TESTING)
   function(add_python_test FILE_NAME)
     message(STATUS "Configuring test ${FILE_NAME} ...")
     get_filename_component(TEST_NAME ${FILE_NAME} NAME_WE)
-
     add_test(
       NAME python_test_${TEST_NAME}
       COMMAND ${VENV_Python3_EXECUTABLE} -m pytest ${FILE_NAME}

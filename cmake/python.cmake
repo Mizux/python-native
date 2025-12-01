@@ -268,7 +268,8 @@ if(BUILD_TESTING)
     COMMAND ${VENV_Python3_EXECUTABLE} -m pip install
       --find-links=${CMAKE_CURRENT_BINARY_DIR}/python/dist ${PYTHON_PROJECT}==${PROJECT_VERSION}
     # install modules only required to run examples
-    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install pytest
+    COMMAND ${VENV_Python3_EXECUTABLE} -m pip install
+      pytest
     BYPRODUCTS ${VENV_DIR}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Create venv and install ${PYTHON_PROJECT}"

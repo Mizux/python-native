@@ -58,6 +58,9 @@ else()
   endforeach()
 endif()
 
+# Enable CCache if any
+include(ccache)
+
 # Disable CTest targets
 set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 include(CTest)

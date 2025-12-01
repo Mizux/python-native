@@ -1,20 +1,18 @@
+# Native build
+.cache/
+.vagrant/
 *.py[co]
-
 build/
 build*/
-export/
 cache/
+compile_commands.json
+export/
+__pycache__
 
-.vagrant/
-
-# IDE
-.vs/
-.vscode/
-.cache/
-# Kdevelop
+# Editors
 .kdev4/
 *.kdev4
-# vim
-compile_commands.json
 *.swp
 *.user
+.vs/
+.vscode/

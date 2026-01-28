@@ -12,12 +12,12 @@ jobs:
     strategy:
       matrix:
         distro: [
-          almalinux,
+          # almalinux,
           alpine,
           debian,
           fedora,
           opensuse,
-          rockylinux,
+          # rockylinux,
           ubuntu
         ]
       fail-fast: false

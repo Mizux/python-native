@@ -27,6 +27,7 @@ RUN apt update -q \
 && apt clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Add the library src to our build env
 FROM env AS devel
 WORKDIR /home/project
 COPY . .

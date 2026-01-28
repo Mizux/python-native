@@ -13,18 +13,18 @@ jobs:
     strategy:
       matrix:
         cmake: [
-          {name: "Xcode", generator: "Xcode", config: Release, build_target: ALL_BUILD, test_target: RUN_TESTS, install_target: install},
-          {name: "Make", generator: "Unix Makefiles", config: Release, build_target: all, test_target: test, install_target: install},
+          {name: "Xcode", generator: "Xcode", config: Release, build: ALL_BUILD, test: RUN_TESTS, install: install},
+          {name: "Make", generator: "Unix Makefiles", config: Release, build: all, test: test, install: install}
         ]
         python: [
           {version: "3.9"},
           #{version: "3.10"},
           #{version: "3.11"},
-          {version: "3.12"},
-          #{version: "3.13"},
+          #{version: "3.12"},
+          {version: "3.13"},
         ]
       fail-fast: false
-    name: MacOS•${{matrix.cmake.name}}•Py${{matrix.python.version}}
+    name: MacOS•CMake(${{matrix.cmake.name}})•Py${{matrix.python.version}}
     runs-on: macos-latest # macos M1 based runner
     steps:
       - uses: actions/checkout@v6
@@ -35,10 +35,10 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: ${{ matrix.python.version }}
+          python-version: ${{matrix.python.version}}
       - name: Update Path
         run: |
-          echo "$HOME/Library/Python/${{ matrix.python.version }}/bin" >> $GITHUB_PATH
+          echo "$HOME/Library/Python/${{matrix.python.version}}/bin" >> $GITHUB_PATH
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Check CMake
         run: cmake --version
@@ -52,20 +52,20 @@ jobs:
         run: >
           cmake --build build
           --config ${{matrix.cmake.config}}
-          --target ${{matrix.cmake.build_target}}
+          --target ${{matrix.cmake.build}}
           -v -j2
       - name: Test
         run: >
           CTEST_OUTPUT_ON_FAILURE=1
           cmake --build build
           --config ${{matrix.cmake.config}}
-          --target ${{matrix.cmake.test_target}}
+          --target ${{matrix.cmake.test}}
           -v
       - name: Install
         run: >
           cmake --build build
           --config ${{matrix.cmake.config}}
-          --target ${{matrix.cmake.install_target}}
+          --target ${{matrix.cmake.install}}
           -v
 
   arm64_macos:

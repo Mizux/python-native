@@ -23,6 +23,9 @@ WORKDIR /home/project
 COPY . .
 COPY ./ci/docker/arm64v8/manylinux/build-manylinux.sh .
 
+ARG CMAKE_BUILD_PARALLEL_LEVEL
+ENV CMAKE_BUILD_PARALLEL_LEVEL=${CMAKE_BUILD_PARALLEL_LEVEL:-4}
+
 FROM devel AS build
 RUN ./build-manylinux.sh build
 

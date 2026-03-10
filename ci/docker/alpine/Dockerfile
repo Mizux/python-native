@@ -11,7 +11,7 @@ RUN apk add --no-cache swig
 
 # Install Python
 RUN apk add --no-cache \
- python3-dev py3-pip py3-wheel \
+ python3-dev py3-pip py3-setuptools py3-wheel \
  py3-virtualenv
 
 # Add the library src to our build env
